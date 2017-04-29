@@ -7,7 +7,9 @@ Provides interface for Kivy applications to access [Google Admob] functionalty o
 
 ### Demo Screenshot
 
-<div style="text-align:center"><img src="https://raw.githubusercontent.com/MichaelStott/KivMob/master/demo/assets/demo-screenshot-github.png"></div>
+<p align="center">
+  <img src="https://raw.githubusercontent.com/MichaelStott/KivMob/master/demo/assets/demo-screenshot-github.png">
+</p>
 
 ### Installation
 
