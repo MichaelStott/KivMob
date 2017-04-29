@@ -5,6 +5,8 @@ Provides interface for Kivy applications to access [Google Admob] functionalty o
   - No need to change internal Android project manifest templates, Java code, or manually add external libraries.
   - Support for interstitial and banner ads.
 
+![Screenshot](https://raw.githubusercontent.com/MichaelStott/KivMob/master/demo/assets/demo-screenshot.png)
+
 ### Installation
 
 Download python-for-android-admob and install KivMob using the following commands.
@@ -16,7 +18,7 @@ $ pip install kivmob
 
 Make the following changes in buildozer.spec.
 ```sh
-requirements = kivy, hostpython2, android
+requirements = kivy, hostpython2, android, kivmob
 android.permissions = INTERNET, ACCESS_NETWORK_STATE
 android.p4a_dir = # dir/to/python-for-android-admob/
 android.bootstrap = sdl2-admob
