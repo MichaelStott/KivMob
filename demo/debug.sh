@@ -1,1 +1,0 @@
-adb logcat | grep python
