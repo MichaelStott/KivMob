@@ -1,6 +1,6 @@
 ![KivMob](https://raw.githubusercontent.com/MichaelStott/KivMob/master/demo/assets/kivmob-title.png)
 
-Provides interface for Kivy applications to access [Google Admob] functionalty on Android devices.
+Provides interface for [Kivy] applications to access [Google Admob] functionalty on Android devices.
 
   - No need to change internal Android project manifest templates, Java code, or manually add external libraries.
   - Support for interstitial and banner ads.
@@ -29,10 +29,13 @@ android.bootstrap = sdl2-admob
 ```
 
 ### Todos
- - Buildozer recipe for KivMob that would make changes to Android project, download AdMob library, and provide Java backend. (Eliminating need for python-for-android-admob)
- - iOS support.
+ - Finish remaining unimplemented methods in AdMobBridge interface.
+ - Write documentation.
+ - Develop Buildozer recipe for KivMob that would make changes to Android project, download AdMob library, and provide Java backend. (Eliminating need for python-for-android-admob)
 
 ### Future Work
  - Layout that repositions widgets when banner ad is displayed.
+ - iOS support.
 
 [Google Admob]: <https://www.google.com/admob/>
+[Kivy]: <https://kivy.org/>
