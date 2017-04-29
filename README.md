@@ -5,7 +5,9 @@ Provides interface for Kivy applications to access [Google Admob] functionalty o
   - No need to change internal Android project manifest templates, Java code, or manually add external libraries.
   - Support for interstitial and banner ads.
 
-![Screenshot](https://raw.githubusercontent.com/MichaelStott/KivMob/master/demo/assets/demo-screenshot.png)
+### Demo Screenshot
+
+<img align="center" src="https://raw.githubusercontent.com/MichaelStott/KivMob/master/demo/assets/demo-screenshot-github.png" alt="Demo Screenshot">
 
 ### Installation
 
