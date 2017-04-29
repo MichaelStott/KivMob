@@ -1,4 +1,4 @@
-# KivMob
+![KivMob](https://raw.githubusercontent.com/MichaelStott/KivMob/master/demo/assets/kivmob-title.png)
 
 Provides interface for Kivy applications to access [Google Admob] functionalty on Android devices.
 
