@@ -42,7 +42,7 @@ class KivMobTest(App):
 KivMobTest().run()
 ```
 
-In the same directory, generate buildozer.spec and make the following changes in buildozer.spec.
+In the same directory, generate buildozer.spec and make the following changes.
 
 ```sh
 requirements = kivy, hostpython2, android, kivmob
