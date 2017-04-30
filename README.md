@@ -57,6 +57,10 @@ To build and deploy the project, run the following command. Wait a few moments f
 $ buildozer android_new debug deploy
 ```
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/MichaelStott/KivMob/master/demo/assets/tutorial-screenshot.png">
+</p>
+
 Look under the demo folder for a more extensive example.
 
 ### Todo
