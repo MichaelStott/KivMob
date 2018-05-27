@@ -32,9 +32,9 @@ from kivy.uix.button import Button
 class KivMobTest(App):
     
     def build(self):
-        ads = KivMob("ca-app-pub-APP_ID")
+        ads = KivMob("APP_ID")
         ads.add_test_device("TEST_DEVICE_ID")
-        ads.new_interstitial("ca-app-pub-INTERSTITIAL_ID")
+        ads.new_interstitial("INTERSTITIAL_ID")
         ads.request_interstitial()
         return Button(text='Show Interstitial',
                       on_release= lambda a:ads.show_interstitial())
