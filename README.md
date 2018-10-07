@@ -1,9 +1,10 @@
 ![KivMob](https://raw.githubusercontent.com/MichaelStott/KivMob/master/demo/assets/kivmob-title.png)
 
-Provides interface for [Kivy] applications to access [Google Admob] functionalty on Android devices.
+Framework which enables ad monitization for [Kivy]-based Android applications.
 
-  - No need to change internal Android project manifest templates, Java code, or manually add external libraries.
-  - Support for interstitial and banner ads.
+  - Automates Android project configuration through CLI tool.
+  - Video, interstitial, and banner ads.
+  - Google AdMob support.
 
 ### Demo Screenshot
 
@@ -13,12 +14,11 @@ Provides interface for [Kivy] applications to access [Google Admob] functionalty
 
 ### Installation
 
-Download python-for-android-admob and install KivMob using the following commands.
+You can install KivMob with the following command.
 ```sh
-$ git clone https://github.com/MichaelStott/python-for-android-admob.git
 $ pip install kivmob
 ```
-### Tutorial & Build Instructions
+### Quick Tutorial
 
 This tutorial assumes you are familiar with AdMob. Additionally, be sure that you have the latest version of [Buildozer] installed, as KivMob uses the android_new toolchain.
 
@@ -47,14 +47,13 @@ In the same directory, generate buildozer.spec and make the following changes.
 ```sh
 requirements = kivy, hostpython2, android, kivmob
 android.permissions = INTERNET, ACCESS_NETWORK_STATE
-android.p4a_dir = # dir/to/python-for-android-admob/
 android.bootstrap = sdl2-admob
 ```
 
 To build and deploy the project, run the following command. Wait a few moments for the ad to load before pressing the button.
 
 ```sh
-$ buildozer android_new debug deploy
+$ buildozer android debug deploy
 ```
 
 <p align="center">

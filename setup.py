@@ -9,5 +9,6 @@ setup(name='kivmob',
       py_modules=['kivmob'],
       install_requires=[
           'kivy',
+          'Click'
       ],
       zip_safe=False)
