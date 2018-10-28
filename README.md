@@ -20,7 +20,7 @@ $ pip install kivmob
 ```
 ### Tutorial & Build Instructions
 
-This tutorial assumes you are familiar with AdMob. Additionally, be sure that you have the latest version of [Buildozer] installed, as KivMob uses the android_new toolchain.
+This tutorial assumes you are familiar with AdMob. Additionally, be sure that you have the latest version of [Buildozer] installed.
 
 Create a new directory. Copy the following and paste it into a new main.py file. Be sure to include your AdMob app ID, your test device ID, and interstitial ID.
 
@@ -54,7 +54,7 @@ android.bootstrap = sdl2-admob
 To build and deploy the project, run the following command. Wait a few moments for the ad to load before pressing the button.
 
 ```sh
-$ buildozer android_new debug deploy
+$ buildozer android debug deploy
 ```
 
 <p align="center">
