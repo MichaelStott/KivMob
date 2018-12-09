@@ -1,9 +1,9 @@
-package org.renpy.android;
+package org.kivy.android;
 
-import java.utils.ArrayList;
+import java.util.ArrayList;
 import android.os.Bundle;
 import android.os.Handler;
-import andoird.os.Message;
+import android.os.Message;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +16,7 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.ads.mediation.admob.AdMobAdapter;
 
-public class AdMobAdapter {
+public class KivMobAdMobAdapter {
 
     private static AdView adView = null;
     private static InterstitialAd interstitialAd = null;

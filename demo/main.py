@@ -103,10 +103,9 @@ class KivMobDemo(App):
     TEST_DEVICE_ID = "COPY DEVICE ID HERE"
     
     def build(self):
-        self.ads = KivMob(APP_ID)
-        self.ads.add_test_device(TEST_DEVICE_ID)
-        self.ads.new_banner({"unitID":BANNER_ID})
-        self.ads.new_interstitial(INTERSTITIAL_ID)
+        self.ads = KivMob("ca-app-pub-3940256099942544~3347511713")
+        self.ads.new_banner({"unitID":"ca-app-pub-3940256099942544/6300978111"})
+        self.ads.new_interstitial("ca-app-pub-3940256099942544/1033173712")
         self.ads.request_banner()
         self.ads.request_interstitial()
         self.toggled = False
@@ -131,7 +130,7 @@ class KivMobDemo(App):
         button_layout = BoxLayout()
         button1=Button(text="Open Build Steps", size_hint=(0.8, 0.2))
         button1.bind(on_release = lambda x :
-                     webbrowser.open("https://www.google.com"))
+                     webbrowser.open("https://github.com/MichaelStott/KivMob/blob/master/README.md"))
         button_layout.add_widget(button1)
         button2=Button(text="Close", size_hint=(0.8, 0.2))
         button2.bind(on_release = lambda x : popup.dismiss())
