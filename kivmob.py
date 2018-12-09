@@ -141,7 +141,7 @@ class AndroidBridge(AdMobBridge):
         Handler.sendEmptyMessage(Cmd.HIDE_BANNER.ordinal())
 
     def _build_msg(self, ordinal, options):
-        # Builds message to for controlling admob backend.
+        # Create message for controlling admob backend.
         msg = Message.obtain()
         msg.what = ordinal
         bundle = Bundle()
