@@ -2,16 +2,42 @@ from kivy.utils import platform
 from kivy.logger import Logger
 
 if platform == 'android':
-    from jnius import autoclass, cast
-    from android.runnable import run_on_ui_thread
-    activity = autoclass('org.kivy.android.PythonActivity')
-    Cmd = autoclass('org.kivy.android.PythonActivity$AdCmd')
-    Handler = autoclass('org.kivy.android.PythonActivity').adHandler
-    Message = autoclass('android.os.Message')
-    Bundle = autoclass('android.os.Bundle')
+    try:
+        from jnius import autoclass, cast
+        from android.runnable import run_on_ui_thread
+        View = autoclass('android.view.View')
+        activity = autoclass('org.kivy.android.PythonActivity')
+        AdListener = autoclass('com.google.android.gms.ads.AdListener')
+        AdMobAdapter = autoclass('com.google.ads.mediation.admob.AdMobAdapter')
+        AdRequest = autoclass('com.google.android.gms.ads.AdRequest')
+        AdRequestBuilder = autoclass('com.google.android.gms.ads.AdRequest$Builder')
+        AdSize = autoclass('com.google.android.gms.ads.AdSize')
+        AdView = autoclass('com.google.android.gms.ads.AdView')
+        Bundle = autoclass('android.os.Bundle')
+        InterstitialAd = autoclass('com.google.android.gms.ads.InterstitialAd')
+        MobileAds = autoclass('com.google.android.gms.ads.MobileAds')
+    except:
+        Logger.info('KivMob: Cannot load AdMob classes. Check buildozer.spec configuraiton.')
 else:
     def run_on_ui_thread(x):
         pass
+        
+
+class TestIds():
+    """ Enum of test ad ids provided by AdMob. This allows developers to test displaying ads
+        without setting up an account.
+
+        App ID Source: https://developers.google.com/admob/android/quick-start
+        Ad IDs Source: https://developers.google.com/admob/android/test-ads
+    """
+
+    APP = "ca-app-pub-3940256099942544~3347511713"
+    BANNER =  "ca-app-pub-3940256099942544/6300978111"
+    INTERSTITIAL = "ca-app-pub-3940256099942544/1033173712"
+    INTERSTITIAL_VIDEO = "ca-app-pub-3940256099942544/8691691433"
+    REWARDED_VIDEO = " 	ca-app-pub-3940256099942544/5224354917"
+    
+
 
 class AdMobBridge():
     """ Interface for communicating with native AdMob library.
@@ -33,7 +59,7 @@ class AdMobBridge():
         Logger.info('KivMob: is_interstitial_loaded() called.')
         return False
         
-    def new_banner(self, options):
+    def new_banner(self, unitID):
         """ Create a new banner ad.
         """
         Logger.info('KivMob: new_banner() called.')
@@ -56,14 +82,14 @@ class AdMobBridge():
     def show_banner(self):
         """ If possible, show banner ad.
 
-        NOTE: You must call request_banner() beforehand!
+            NOTE: You must call request_banner() beforehand!
         """
         Logger.info('KivMob: show_banner() called.')
 
     def show_interstitial(self):
         """ If possible, show interstitial ad.
 
-        NOTE: You must call request_interstitial() beforehand!
+            NOTE: You must call request_interstitial() beforehand!
         """
         Logger.info('KivMob: show_interstitial() called.')
     
@@ -88,37 +114,48 @@ class AndroidBridge(AdMobBridge):
     @run_on_ui_thread
     def __init__(self, appID):
         self._loaded = False
-        Handler.sendMessage(self._build_msg(Cmd.INIT_ADS.ordinal(),
-                                            {"appID":appID}))
-        
-    @run_on_ui_thread
-    def new_banner(self, options={}):
-        Handler.sendMessage(self._build_msg(
-            Cmd.NEW_BANNER.ordinal(), options))
-        
-    @run_on_ui_thread
-    def new_interstitial(self, unitID):
-        Handler.sendMessage(self._build_msg(
-            Cmd.NEW_INTERSTITIAL.ordinal(), {"unitID":unitID}))
+        self._adview = AdView(activity.mActivity)
+        self._interstitial = InterstitialAd(activity.mActivity)
+        MobileAds.initialize(activity.mActivity, appID)
 
     @run_on_ui_thread
-    def add_test_device(self, deviceID):
-        Handler.sendMessage(self._build_msg(
-            Cmd.ADD_TEST_DEVICE.ordinal(), {"deviceID":deviceID}))
+    def new_banner(self, unitID):
+        self._adview = AdView(activity.mActivity)
+        self._adview.setAdUnitId(unitID)
+        self._adview.setAdSize(AdSize.SMART_BANNER)
+        self._adview.setVisibility(View.GONE)
+        activity.getLayout().addView(self._adview)
 
     @run_on_ui_thread
     def request_banner(self, options={}):
-        Handler.sendMessage(self._build_msg(
-            Cmd.REQ_BANNER.ordinal(), options))
-        
+        self._adview.loadAd(AdRequestBuilder().build())
+
+    @run_on_ui_thread
+    def show_banner(self):
+        self._adview.setVisibility(View.VISIBLE)
+
+    @run_on_ui_thread
+    def hide_banner(self):
+        self._adview.setVisibility(View.GONE)
+
+    @run_on_ui_thread
+    def new_interstitial(self, unitID):
+        self._interstitial.setAdUnitId(unitID)
+
     @run_on_ui_thread
     def request_interstitial(self, options={}):
-        Handler.sendMessage(self._build_msg(
-            Cmd.REQ_INTERSTITIAL.ordinal(), options))
+        builder = AdRequestBuilder()
+        if "children" in options:
+            builder.tagForChildDirectedTreatment(options["children"])
+        if "family" in options:
+            extras = Bundle()
+            extras.putBoolean("is_designed_for_families", options['family'])
+            builder.addNetworkExtrasBundle(AdMobAdapter, extras)
+        self._interstitial.loadAd(builder.build())
 
     @run_on_ui_thread
     def _is_interstitial_loaded(self):
-        self._loaded = activity.isLoaded()
+        self._loaded = self._interstitial.isLoaded()
 
     def is_interstitial_loaded(self):
         # Values returned from run_on_ui_thread appear as
@@ -128,33 +165,9 @@ class AndroidBridge(AdMobBridge):
         return self._loaded
 
     @run_on_ui_thread
-    def show_banner(self):
-        Handler.sendEmptyMessage(Cmd.SHOW_BANNER.ordinal())
-        
-    @run_on_ui_thread
     def show_interstitial(self):
-        Handler.sendEmptyMessage(Cmd.SHOW_INTERSTITIAL.ordinal())
-
-    @run_on_ui_thread
-    def hide_banner(self):
-        Handler.sendEmptyMessage(Cmd.HIDE_BANNER.ordinal())
-
-    def _build_msg(self, ordinal, options):
-        # Builds message to for controlling admob backend.
-        msg = Message.obtain()
-        msg.what = ordinal
-        bundle = Bundle()
-        for key, value in options.iteritems():
-            if isinstance(value, bool):
-                bundle.putBoolean(key,value)
-            elif isinstance(value, int):
-                bundle.putInt(key,value)
-            elif isinstance(value, float):
-                bundle.putDouble(key, value)
-            elif isinstance(value, basestring):
-                bundle.putString(key, value)
-        msg.setData(bundle)
-        return msg
+        if self.is_interstitial_loaded():
+            self._interstitial.show()
 
 
 class iOSBridge(AdMobBridge):
@@ -178,8 +191,8 @@ class KivMob():
     def add_test_device(self, device):
         self.bridge.add_test_device(device)
         
-    def new_banner(self, options={}):
-        self.bridge.new_banner(options)
+    def new_banner(self, unitID):
+        self.bridge.new_banner(unitID)
 
     def new_interstitial(self, options={}):
         self.bridge.new_interstitial(options)
@@ -207,6 +220,7 @@ class KivMob():
 
     def hide_banner(self):
         self.bridge.hide_banner()
+
 
 if __name__ == '__main__':
     print("\033[92m  _  ___       __  __       _\n" +\

@@ -1,10 +1,10 @@
 ![KivMob](https://raw.githubusercontent.com/MichaelStott/KivMob/master/demo/assets/kivmob-title.png)
 
-Framework which enables ad monitization for [Kivy]-based Android applications.
+Provides interface for [Kivy] applications to access [Google Admob] functionalty on Android devices.
 
-  - Automates Android project configuration through CLI tool.
-  - Video, interstitial, and banner ads.
-  - Google AdMob support.
+  - No need to change internal Android project manifest templates, Java code, or manually add external libraries.
+  - Interstitial, banner, and rewarded ads.
+  - Python 2.7 and 3.7 supported
 
 ### Demo Screenshot
 
@@ -62,10 +62,9 @@ $ buildozer android debug deploy
 
 Look under the demo folder for a more extensive example.
 
-### Todo
- - Finish remaining unimplemented methods in AdMobBridge interface.
- - Write documentation.
- - Develop Buildozer recipe for KivMob that would make changes to Android project, download AdMob library, and provide Java backend. (Eliminating need for python-for-android-admob)
+### Documentation
+
+Read the official documentaiton here: 
 
 ### Future Work
  - Layout that repositions widgets when banner ad is displayed.
