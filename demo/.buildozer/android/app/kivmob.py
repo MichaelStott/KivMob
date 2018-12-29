@@ -3,9 +3,8 @@ from kivy.logger import Logger
 
 if platform == 'android':
     try:
-        from jnius import autoclass, cast
+        from jnius import autoclass, cast, PythonJavaClass, java_method
         from android.runnable import run_on_ui_thread
-        View = autoclass('android.view.View')
         activity = autoclass('org.kivy.android.PythonActivity')
         AdListener = autoclass('com.google.android.gms.ads.AdListener')
         AdMobAdapter = autoclass('com.google.ads.mediation.admob.AdMobAdapter')
@@ -14,18 +13,62 @@ if platform == 'android':
         AdSize = autoclass('com.google.android.gms.ads.AdSize')
         AdView = autoclass('com.google.android.gms.ads.AdView')
         Bundle = autoclass('android.os.Bundle')
+        Gravity = autoclass('android.view.Gravity')
         InterstitialAd = autoclass('com.google.android.gms.ads.InterstitialAd')
+        LayoutParams = autoclass('android.view.ViewGroup$LayoutParams') 
+        LinearLayout = autoclass('android.widget.LinearLayout')
         MobileAds = autoclass('com.google.android.gms.ads.MobileAds')
+        RewardedVideoAd = autoclass('com.google.android.gms.ads.reward.RewardedVideoAd')
+        View = autoclass('android.view.View')
+
+        class RewardedVideoAdListener(PythonJavaClass):
+
+            __javainterfaces__ = ['com/google/android/gms/ads/reward/RewardedVideoAdListener']
+
+            @java_method('()Z')
+            def onRewarded(reward):
+                pass
+
+            @java_method('()Z')
+            def onRewardedVideoAdLeftApplication():
+                pass
+
+            @java_method('()Z')
+            def onRewardedVideoAdClosed():
+                pass
+
+            @java_method('()Z')
+            def onRewardedVideoAdFailedToLoad():
+                pass
+
+            @java_method('()Z')
+            def onRewardedVideoAdLoaded():
+                pass
+
+            @java_method('()Z')
+            def onRewardedVideoAdOpened():
+                pass
+
+            @java_method('()Z')
+            def onRewardedVideoStarted():
+                pass
+
+            @java_method('()Z')
+            def onRewardedVideoCompleted():
+                pass
     except:
-        Logger.info('KivMob: Cannot load AdMob classes. Check buildozer.spec configuraiton.')
+        Logger.info('KivMob: Cannot load AdMob classes. Check buildozer.spec configuration.')
 else:
+    class RewardedVideoAdListener():
+        pass
+
     def run_on_ui_thread(x):
         pass
         
 
 class TestIds():
     """ Enum of test ad ids provided by AdMob. This allows developers to test displaying ads
-        without setting up an account.
+        without setting up an AdMob account.
 
         App ID Source: https://developers.google.com/admob/android/quick-start
         Ad IDs Source: https://developers.google.com/admob/android/test-ads
@@ -35,9 +78,8 @@ class TestIds():
     BANNER =  "ca-app-pub-3940256099942544/6300978111"
     INTERSTITIAL = "ca-app-pub-3940256099942544/1033173712"
     INTERSTITIAL_VIDEO = "ca-app-pub-3940256099942544/8691691433"
-    REWARDED_VIDEO = " 	ca-app-pub-3940256099942544/5224354917"
+    REWARDED_VIDEO = "ca-app-pub-3940256099942544/5224354917"
     
-
 
 class AdMobBridge():
     """ Interface for communicating with native AdMob library.
@@ -59,7 +101,7 @@ class AdMobBridge():
         Logger.info('KivMob: is_interstitial_loaded() called.')
         return False
         
-    def new_banner(self, unitID):
+    def new_banner(self, unitID, top_pos=True):
         """ Create a new banner ad.
         """
         Logger.info('KivMob: new_banner() called.')
@@ -108,23 +150,42 @@ class AdMobBridge():
         """
         Logger.info('KivMob: hide_banner() called.')
 
+    def load_rewarded_ad(self, unitID):
+        ''' Load rewarded ad.
+        '''
+        Logger.info('KivMob: load_rewarded_ad() called.')
+
+    def show_rewarded_ad(self):
+        ''' If possible, show rewardeed video app.
+        '''
+        Logger.info('KivMob: show_rewarded_ad() called.')
 
 class AndroidBridge(AdMobBridge):
-    
+
     @run_on_ui_thread
     def __init__(self, appID):
         self._loaded = False
         self._adview = AdView(activity.mActivity)
         self._interstitial = InterstitialAd(activity.mActivity)
         MobileAds.initialize(activity.mActivity, appID)
+        self._rewarded = MobileAds.getRewardedVideoAdInstance(activity.mActivity)
 
     @run_on_ui_thread
-    def new_banner(self, unitID):
+    def new_banner(self, unitID, top_pos=True):
         self._adview = AdView(activity.mActivity)
         self._adview.setAdUnitId(unitID)
         self._adview.setAdSize(AdSize.SMART_BANNER)
         self._adview.setVisibility(View.GONE)
-        activity.getLayout().addView(self._adview)
+        adLayoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+        self._adview.setLayoutParams(adLayoutParams)
+        layout = LinearLayout(activity.mActivity)
+        if not top_pos:
+            layout.setGravity(Gravity.BOTTOM)
+        layout.addView(self._adview)
+        layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+        layout.setLayoutParams(layoutParams)
+        activity.addContentView(layout, layoutParams)
+        
 
     @run_on_ui_thread
     def request_banner(self, options={}):
@@ -169,6 +230,14 @@ class AndroidBridge(AdMobBridge):
         if self.is_interstitial_loaded():
             self._interstitial.show()
 
+    @run_on_ui_thread
+    def load_rewarded_ad(self, unitID):
+        self._rewarded.loadAd(unitID, AdRequestBuilder().build())
+
+    @run_on_ui_thread
+    def show_rewarded_ad(self):
+        self._rewarded.show()
+
 
 class iOSBridge(AdMobBridge):
     # TODO
@@ -191,8 +260,8 @@ class KivMob():
     def add_test_device(self, device):
         self.bridge.add_test_device(device)
         
-    def new_banner(self, unitID):
-        self.bridge.new_banner(unitID)
+    def new_banner(self, unitID, top_pos=True):
+        self.bridge.new_banner(unitID, top_pos)
 
     def new_interstitial(self, options={}):
         self.bridge.new_interstitial(options)
@@ -220,6 +289,12 @@ class KivMob():
 
     def hide_banner(self):
         self.bridge.hide_banner()
+
+    def load_rewarded_ad(self, unitID):
+        self.bridge.load_rewarded_ad(unitID)
+
+    def show_rewarded_ad(self):
+        self.bridge.show_rewarded_ad()
 
 
 if __name__ == '__main__':

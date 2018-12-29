@@ -7,43 +7,47 @@ from kivy.config import Config
 from kivy.utils import platform
 from kivy.core.window import Window
 from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.screenmanager import ScreenManager
 from kivy.uix.image import Image
 
 if platform not in ('android', 'ios'):
     # Approximate dimensions of mobile phone.
     Config.set('graphics', 'resizable', '0')
     Window.size = (400, 600)
-import webbrowser
 
 __version__ = "1.0"
 
 from kivymd.label import MDLabel
 from kivymd.theming import ThemeManager
 from kivymd.list import ILeftBody
+from kivymd.label import MDLabel
+from kivymd.snackbar import Snackbar
 
 Builder.load_string("""
 #:import kivy kivy
 
 #:import Toolbar kivymd.toolbar.Toolbar
 #:import MDCard kivymd.card.MDCard
-#:import MDSeparator kivymd.card.MDSeparator
 #:import MDList kivymd.list.MDList
+#:import MDSeparator kivymd.card.MDSeparator
+#:import MDSpinner kivymd.spinner.MDSpinner
 #:import OneLineListItem kivymd.list.OneLineListItem
 #:import TwoLineListItem kivymd.list.TwoLineListItem
 #:import ThreeLineListItem kivymd.list.ThreeLineListItem
 
-<KivMobDemoUI>:
+#:import webbrowser webbrowser
 
+<KivMobDemoUI>:
     BoxLayout:
         orientation: 'vertical'
         Toolbar:
             id: toolbar
-            title: 'KivMob'
+            title: 'KivMob 2.0'
             md_bg_color: app.theme_cls.primary_color
-            #left_action_items: None # [['menu', lambda x: app.root.toggle_nav_drawer()]]
         ScreenManager:
+            id: scr_mngr
             Screen:
-                name: 'list'
+                name: 'menu'
                 ScrollView:
                     do_scroll_x: False
                     MDList:
@@ -51,69 +55,129 @@ Builder.load_string("""
                             type: "three-line"
                             text: "Banners"
                             secondary_text: "Rectangular image or text ads that occupy a spot within an app's layout."
-                            AvatarSampleWidget:
+                            on_press: app.root.switch_to_screen("banner", "Banners")
+                            AvatarIconWidget:
                                 source: './assets/banner.png'
                         ThreeLineAvatarListItem:
                             type: "three-line"
                             text: "Interstitial"
                             secondary_text: "Full-screen ads that cover the interface of an app until closed by the user."
-                            AvatarSampleWidget:
+                            on_press: app.root.switch_to_screen("interstitial", "Interstitial")
+                            AvatarIconWidget:
                                 source: './assets/interstitial.png'
                         ThreeLineAvatarListItem:
-                            type: "four-line"
+                            type: "three-line"
                             text: "Rewarded Video"
                             secondary_text: "Video ads that users may watch in exchange for in-app rewards."
-                            AvatarSampleWidget:
+                            on_press: app.root.switch_to_screen("rewarded", "Rewarded Video Ad")
+                            AvatarIconWidget:
                                 source: './assets/rewarded.png'
-                        ThreeLineAvatarListItem:
-                            type: "three-line"
-                            text: "Native"
-                            secondary_text: "Customize the way assets and calls to action are presented in your apps."
-                            AvatarSampleWidget:
-                                source: './assets/native.png'
                         ThreeLineAvatarListItem:
                             type: "three-line"
                             text: "Documentation"
                             secondary_text: "Learn how to utilize KivMob within a mobile Kivy application."
-                            AvatarSampleWidget:
+                            AvatarIconWidget:
                                 source: './assets/documentation.png'
                         ThreeLineAvatarListItem:
                             type: "three-line"
                             text: "Source Code"
                             secondary_text: "Checkout, fork, and follow the KivMob project on GitHub."
-                            AvatarSampleWidget:
+                            on_press: webbrowser.open("https://github.com/MichaelStott/KivMob")
+                            AvatarIconWidget:
                                 source: './assets/github.png'
                         ThreeLineAvatarListItem:
                             type: "three-line"
                             text: "About"
-                            secondary_text: "Credits, software licensing information, and other information."
-                            AvatarSampleWidget:
+                            secondary_text: "Software licensing, credits, and other KivMob information."
+                            AvatarIconWidget:
                                 source: './assets/about.png'
+            Screen:
+                name: "banner"
+                on_pre_leave: app.ads.hide_banner()
+                MDRaisedButton:
+                    text: "Toggle Banner Ad"
+                    elevation_normal: 2
+                    opposite_colors: True
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                    on_press: app.toggle_banner()
+            Screen:
+                name: "interstitial"
+                MDRaisedButton:
+                    text: "Show Interstitial"
+                    elevation_normal: 2
+                    opposite_colors: True
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                    on_press: app.ads.show_interstitial() if app.ads.is_interstitial_loaded() else app.root.show_interstitial_msg()
+            Screen:
+                name: 'rewarded'
+                BoxLayout:
+                    MDLabel:
+                        font_style: 'Headline'
+                        theme_text_color: 'Primary'
+                        text: "Counter: 0"
+                        halign: 'center'
+                        pos_hint: {'center_x': 0.5, 'center_y': 0.75}
+                MDFloatingActionButton:
+                    icon: 'plus'
+                    elevation_normal: 2
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.25}
+                    on_press: app.ads.show_rewarded_ad()
 """)
 
 
-class AvatarSampleWidget(ILeftBody, Image):
+class AvatarIconWidget(ILeftBody, Image):
     pass
 
 
 class KivMobDemoUI(FloatLayout):
-    pass
+
+    def switch_to_screen(self, name, title):
+        self.ids.toolbar.title = title
+        self.ids.toolbar.left_action_items = [['chevron-left', lambda x: self.back_to_menu()]]
+        self.ids.scr_mngr.transition.direction = 'left'
+        self.ids.scr_mngr.current = name
+        self.snackbar = Snackbar(text="Interstitial has not yet loaded.")
+
+
+    def back_to_menu(self):
+        self.ids.scr_mngr.transition.direction = 'right'
+        self.ids.scr_mngr.current = "menu"
+        self.ids.toolbar.title = "KivMob 2.0"
+        self.ids.toolbar.left_action_items = []
+
+    def show_interstitial_msg(self):
+        self.snackbar.show()
+
+    def hide_interstitial_msg(self):
+        self.snackbar.hide()
+
+    def open_dialog(self):
+        pass
 
         
 class KivMobDemo(App):
     
     theme_cls = ThemeManager()
 
+    show_banner = False
+
     def build(self):
-        #self.theme_cls.theme_style = 'Dark'
-        self.theme_cls.primary_palette = 'Indigo'
         self.ads = KivMob(TestIds.APP)
-        self.ads.new_banner(TestIds.BANNER)
-        self.ads.new_interstitial(TestIds.INTERSTITIAL_VIDEO)
+        self.ads.new_banner(TestIds.BANNER, False)
+        self.ads.new_interstitial(TestIds.INTERSTITIAL)
+        self.ads.load_rewarded_ad(TestIds.REWARDED_VIDEO)
         self.ads.request_banner()
         self.ads.request_interstitial()
         self.toggled = False
         return KivMobDemoUI()
+
+    def toggle_banner(self):
+        self.show_banner = not self.show_banner
+        if self.show_banner:
+            self.ads.show_banner()
+        else:
+            self.ads.hide_banner()
+
 
 if __name__ == "__main__":
     KivMobDemo().run()
