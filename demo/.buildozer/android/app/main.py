@@ -93,7 +93,9 @@ Builder.load_string("""
                                 source: './assets/about.png'
             Screen:
                 name: "banner"
-                on_pre_leave: app.ads.hide_banner()
+                on_pre_leave:
+                    app.ads.hide_banner()
+                    app.show_banner = False
                 MDRaisedButton:
                     text: "Toggle Banner Ad"
                     elevation_normal: 2
@@ -162,12 +164,12 @@ class KivMobDemo(App):
     show_banner = False
 
     def build(self):
-        self.ads = KivMob(TestIds.APP)
+        self.ads = KivMob("ca-app-pub-9768668056051661~4645944030")
         self.ads.new_banner(TestIds.BANNER, False)
         self.ads.new_interstitial(TestIds.INTERSTITIAL)
-        self.ads.load_rewarded_ad(TestIds.REWARDED_VIDEO)
         self.ads.request_banner()
         self.ads.request_interstitial()
+        self.ads.load_rewarded_ad("ca-app-pub-9768668056051661/1924082302")
         self.toggled = False
         return KivMobDemoUI()
 
