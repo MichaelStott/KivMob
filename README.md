@@ -1,5 +1,9 @@
 ![KivMob](https://raw.githubusercontent.com/MichaelStott/KivMob/master/demo/assets/kivmob-title.png)
 
+
+[![Downloads](https://pepy.tech/badge/kivmob)](https://pepy.tech/project/kivmob)
+[![Downloads](https://pepy.tech/badge/kivmob/month)](https://pepy.tech/project/kivmob)
+
 Allows developers to monetize their [Kivy] mobile applications using [Google AdMob].
 
   - No need to change internal Android project manifest templates, Java code, or manually add external libraries.
