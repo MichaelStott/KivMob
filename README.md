@@ -1,40 +1,46 @@
 ![KivMob](https://raw.githubusercontent.com/MichaelStott/KivMob/master/demo/assets/kivmob-title.png)
 
-Provides interface for [Kivy] applications to access [Google Admob] functionalty on Android devices.
+Allows developers to monetize their [Kivy] mobile applications using [Google AdMob].
 
   - No need to change internal Android project manifest templates, Java code, or manually add external libraries.
-  - Support for interstitial and banner ads.
+  - Banner, interstitial, and rewarded video ads (WIP).
 
-### Demo Screenshot
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/MichaelStott/KivMob/master/demo/assets/demo-screenshot-github.png">
-</p>
 
 ### Installation
 
-Download python-for-android-admob and install KivMob using the following commands.
+You can install KivMob with the following command.
 ```sh
-$ git clone https://github.com/MichaelStott/python-for-android-admob.git
-$ pip install kivmob
+$ pip install  git+https://github.com/MichaelStott/KivMob
 ```
-### Tutorial & Build Instructions
 
-This tutorial assumes you are familiar with AdMob. Additionally, be sure that you have the latest version of [Buildozer] installed.
+### Demo Screenshot
+![KivMob](https://raw.githubusercontent.com/MichaelStott/KivMob/master/demo/assets/demo_screenshotv2.png)
 
-Create a new directory. Copy the following and paste it into a new main.py file. Be sure to include your AdMob app ID, your test device ID, and interstitial ID.
+### Documentation
 
+Coming soon....
+
+### Quickstart
+
+Create an new folder containing main.py and buildozer.spec.
+```sh
+$ mkdir kivmob-quickstart
+$ cd kivmob-quickstart
+$ touch main.py
+$ buildozer init
+```
+
+Copy the following into main.py.
 ```python
-from kivmob import KivMob
+from kivmob import KivMob, TestIds
 from kivy.app import App
 from kivy.uix.button import Button
 
 class KivMobTest(App):
     
     def build(self):
-        ads = KivMob("APP_ID")
-        ads.add_test_device("TEST_DEVICE_ID")
-        ads.new_interstitial("INTERSTITIAL_ID")
+        ads = KivMob(TestIds.APP)
+        ads.new_interstitial(TestIds.INTERSTITIAL)
         ads.request_interstitial()
         return Button(text='Show Interstitial',
                       on_release= lambda a:ads.show_interstitial())
@@ -42,36 +48,34 @@ class KivMobTest(App):
 KivMobTest().run()
 ```
 
-In the same directory, generate buildozer.spec and make the following changes.
+Make the following modifications to your buildozer.spec file.
 
-```sh
-requirements = kivy, hostpython2, android, kivmob
+```
 android.permissions = INTERNET, ACCESS_NETWORK_STATE
-android.p4a_dir = # dir/to/python-for-android-admob/
-android.bootstrap = sdl2-admob
+android.api = 27
+android.minapi = 21
+android.sdk = 24
+android.ndk = 17b
+android.gradle_dependencies = 'com.google.firebase:firebase-ads:10.2.0'
+p4a.branch = master
+# You will need to place your actual app ID here. The below ID corresponds to kivmob.TestIds.APP.
+android.meta_data = com.google.android.gms.ads.APPLICATION_ID=ca-app-pub-3940256099942544~3347511713
 ```
 
-To build and deploy the project, run the following command. Wait a few moments for the ad to load before pressing the button.
+Finally, build and launch the application.
 
 ```sh
-$ buildozer android debug deploy
+$ buildozer android debug deploy run
 ```
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/MichaelStott/KivMob/master/demo/assets/tutorial-screenshot.png">
-</p>
+### Apps using KivMob
 
-Look under the demo folder for a more extensive example.
+Please contact me via pull request or project issue if you would like your KivMob app featured in this README and/or the documentation.
 
-### Todo
- - Finish remaining unimplemented methods in AdMobBridge interface.
- - Write documentation.
- - Develop Buildozer recipe for KivMob that would make changes to Android project, download AdMob library, and provide Java backend. (Eliminating need for python-for-android-admob)
+### Other
 
-### Future Work
- - Layout that repositions widgets when banner ad is displayed.
- - iOS support.
+KivMob is an open source project not associated with AdMob. Please abide by their policies when designing your application.
 
-[Google Admob]: <https://www.google.com/admob/>
+[Google AdMob]: <https://www.google.com/admob/>
 [Kivy]: <https://kivy.org/>
 [Buildozer]: <https://github.com/kivy/buildozer>
