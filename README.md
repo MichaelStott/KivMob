@@ -76,7 +76,7 @@ Please contact me via pull request or project issue if you would like your KivMo
 
 ### Other
 
-KivMob is an open source project not associated with AdMob. Please abide by their policies when designing your application.
+KivMob is an open source project not associated with AdMob. Please abide by their policies when designing and testing your application.
 
 [Google AdMob]: <https://www.google.com/admob/>
 [Kivy]: <https://kivy.org/>
