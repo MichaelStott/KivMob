@@ -18,10 +18,6 @@ $ pip install  git+https://github.com/MichaelStott/KivMob
   <img src="https://raw.githubusercontent.com/MichaelStott/KivMob/master/demo/assets/demo_screenshotv2.png">
 </p>
 
-### Documentation
-
-Coming soon....
-
 ### Quickstart
 
 Create an new folder containing main.py and buildozer.spec.
