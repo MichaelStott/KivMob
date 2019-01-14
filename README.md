@@ -13,7 +13,7 @@ You can install KivMob with the following command.
 $ pip install  git+https://github.com/MichaelStott/KivMob
 ```
 
-### Demo Screenshot
+### Demo Screenshot (WIP)
 <p align="center">
   <img src="https://raw.githubusercontent.com/MichaelStott/KivMob/master/demo/assets/demo_screenshotv2.png">
 </p>
