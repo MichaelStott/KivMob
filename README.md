@@ -3,7 +3,7 @@
 Allows developers to monetize their [Kivy] mobile applications using [Google AdMob].
 
   - No need to change internal Android project manifest templates, Java code, or manually add external libraries.
-  - Banner, interstitial, and rewarded video ads.
+  - Banner, interstitial, and rewarded video ads (WIP).
 
 
 ### Installation
@@ -12,6 +12,9 @@ You can install KivMob with the following command.
 ```sh
 $ pip install  git+https://github.com/MichaelStott/KivMob
 ```
+
+### Demo Screenshot
+![KivMob](https://raw.githubusercontent.com/MichaelStott/KivMob/master/demo/assets/demo_screenshotv2.png)
 
 ### Documentation
 
