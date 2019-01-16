@@ -1,4 +1,4 @@
-from kivmob import KivMob, TestIds
+from kivmob import KivMob, TestIds, RewardedListenerInterface
 
 import kivy.utils
 from kivy.app import App
@@ -138,7 +138,7 @@ class KivMobDemoUI(FloatLayout):
         self.ids.toolbar.left_action_items = [['chevron-left', lambda x: self.back_to_menu()]]
         self.ids.scr_mngr.transition.direction = 'left'
         self.ids.scr_mngr.current = name
-        self.snackbar = Snackbar(text="Interstitial has not yet loaded.")
+        self.interstitial_snack = Snackbar(text="Interstitial has not yet loaded.")
 
 
     def back_to_menu(self):
@@ -148,10 +148,10 @@ class KivMobDemoUI(FloatLayout):
         self.ids.toolbar.left_action_items = []
 
     def show_interstitial_msg(self):
-        self.snackbar.show()
+        self.interstitial_snack.show()
 
     def hide_interstitial_msg(self):
-        self.snackbar.hide()
+        self.interstitial_snack.hide()
 
     def open_dialog(self):
         pass
@@ -169,6 +169,7 @@ class KivMobDemo(App):
         self.ads.new_interstitial(TestIds.INTERSTITIAL)
         self.ads.request_banner()
         self.ads.request_interstitial()
+        self.ads.set_rewarded_ad_listener(RewardedListenerInterface())
         self.ads.load_rewarded_ad(TestIds.REWARDED_VIDEO)
         self.toggled = False
         return KivMobDemoUI()

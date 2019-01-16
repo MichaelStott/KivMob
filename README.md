@@ -2,12 +2,11 @@
 
 [![Python 2.7](https://img.shields.io/badge/python-2.7-green.svg)](https://www.python.org/downloads/release/python-270/)
 [![Downloads](https://pepy.tech/badge/kivmob)](https://pepy.tech/project/kivmob)
-[![Downloads](https://pepy.tech/badge/kivmob/month)](https://pepy.tech/project/kivmob)
 
 Allows developers to monetize their [Kivy] mobile applications using [Google AdMob].
 
   - No need to change internal Android project manifest templates, Java code, or manually add external libraries.
-  - Banner, interstitial, and rewarded video ads (WIP).
+  - Banner, interstitial, and rewarded video ads.
 
 
 ### Installation
@@ -17,7 +16,7 @@ You can install KivMob with the following command.
 $ pip install  git+https://github.com/MichaelStott/KivMob
 ```
 
-### Demo Screenshot (WIP)
+### Demo Screenshot
 <p align="center">
   <img src="https://raw.githubusercontent.com/MichaelStott/KivMob/master/demo/assets/demo_screenshotv2.png">
 </p>
@@ -60,7 +59,6 @@ android.sdk = 24
 android.ndk = 17b
 android.gradle_dependencies = 'com.google.firebase:firebase-ads:10.2.0'
 p4a.branch = master
-# You will need to place your actual app ID here. The below ID corresponds to kivmob.TestIds.APP.
 android.meta_data = com.google.android.gms.ads.APPLICATION_ID=ca-app-pub-3940256099942544~3347511713
 ```
 

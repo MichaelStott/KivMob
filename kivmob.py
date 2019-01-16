@@ -33,38 +33,49 @@ if platform == 'android':
             __javainterfaces__ = ('com.google.android.gms.ads.reward.RewardedVideoAdListener', )
             __javacontext__ = 'app'
 
-            @java_method('(Lcom.google.android.gms.ads.reward.RewardItem;)V')
+            def __init__(self, listener):
+                self._listener = listener
+
+            @java_method('(Lcom/google/android/gms/ads/reward/RewardItem;)V')
             def onRewarded(self, reward):
                 Logger.info('KivMob: onRewarded() called.')
+                self._listener.on_rewarded(reward.getType(), reward.getAmount())
 
             @java_method('()V')
             def onRewardedVideoAdLeftApplication(self):
                 Logger.info('KivMob: onRewardedVideoAdLeftApplication() called.')
+                self._listener.on_rewarded_video_ad_left_application()
 
             @java_method('()V')
             def onRewardedVideoAdClosed(self):
                 Logger.info('KivMob: onRewardedVideoAdClosed() called.')
+                self._listener.on_rewarded_video_ad_closed()
 
             @java_method('(I)V')
             def onRewardedVideoAdFailedToLoad(self, errorCode):
                 Logger.info('KivMob: onRewardedVideoAdFailedToLoad() called.')
-                Logger.info('KivMob: ErrorCode ' + str(errorCode))
+                # Logger.info('KivMob: ErrorCode ' + str(errorCode))
+                self._listener.on_rewarded_video_ad_failed_to_load(errorCode)
 
             @java_method('()V')
             def onRewardedVideoAdLoaded(self):
                 Logger.info('KivMob: onRewardedVideoAdLoaded() called.')
+                self._listener.on_rewarded_video_ad_loaded()
 
             @java_method('()V')
             def onRewardedVideoAdOpened(self):
                 Logger.info('KivMob: onRewardedVideoAdOpened() called.')
+                self._listener.on_rewarded_video_ad_opened()
 
             @java_method('()V')
             def onRewardedVideoStarted(self):
                 Logger.info('KivMob: onRewardedVideoStarted() called.')
+                self._listener.on_rewarded_video_ad_started()
 
             @java_method('()V')
             def onRewardedVideoCompleted(self):
                 Logger.info('KivMob: onRewardedVideoCompleted() called.')
+                self._listener.on_rewarded_video_ad_completed()
     except:
         Logger.error('KivMob: Cannot load AdMob classes. Check buildozer.spec configuration.')
 else:
@@ -74,9 +85,6 @@ else:
     def run_on_ui_thread(x):
         pass
 
-
-class MockBanner(RelativeLayout):
-    pass
 
 
 class TestIds():
@@ -95,7 +103,6 @@ class AdMobBridge():
 
     def __init__(self, appID):
         Logger.info('KivMob: __init__ called.')
-        self.mock_banner = MockBanner()
         
     def add_test_device(self, testID):
         Logger.info('KivMob: add_test_device() called.')
@@ -130,8 +137,9 @@ class AdMobBridge():
 
     def hide_banner(self):
         Logger.info('KivMob: hide_banner() called.')
-        from kivy.core.window import Window
-        Window.remove_widget(self.mock_banner)
+
+    def set_rewarded_ad_listener(self, listener):
+        Logger.info('KivMob: set_rewarded_ad_listener() called.')
 
     def load_rewarded_ad(self, unitID):
         Logger.info('KivMob: load_rewarded_ad() called.')
@@ -139,6 +147,34 @@ class AdMobBridge():
     def show_rewarded_ad(self):
         Logger.info('KivMob: show_rewarded_ad() called.')
 
+
+class RewardedListenerInterface():
+
+    def on_rewarded(self, reward_name, reward_amount):
+        pass
+
+    def on_rewarded_video_ad_left_application(self):
+        pass
+
+    def on_rewarded_video_ad_closed(self):
+        pass
+
+    def on_rewarded_video_ad_failed_to_load(self, error_code):
+        pass
+
+    def on_rewarded_video_ad_loaded(self):
+        pass
+
+    def on_rewarded_video_ad_opened(self):
+        pass
+
+    def on_rewarded_video_ad_started(self):
+        pass
+
+    def on_rewarded_video_ad_completed(self):
+        pass
+        
+        
 class AndroidBridge(AdMobBridge):
 
     @run_on_ui_thread
@@ -147,9 +183,7 @@ class AndroidBridge(AdMobBridge):
         MobileAds.initialize(activity.mActivity, appID)
         self._adview = AdView(activity.mActivity)
         self._interstitial = InterstitialAd(activity.mActivity)
-        self._listener = AdMobRewardedVideoAdListener()
         self._rewarded = MobileAds.getRewardedVideoAdInstance(activity.mActivity)
-        self._rewarded.setRewardedVideoAdListener(self._listener)
         self._test_devices = []
 
     @run_on_ui_thread
@@ -174,7 +208,7 @@ class AndroidBridge(AdMobBridge):
         
     @run_on_ui_thread
     def request_banner(self, options={}):
-        self._adview.loadAd(AdRequestBuilder().build())
+        self._adview.loadAd(self._get_builder(options).build())
 
     @run_on_ui_thread
     def show_banner(self):
@@ -190,18 +224,13 @@ class AndroidBridge(AdMobBridge):
 
     @run_on_ui_thread
     def request_interstitial(self, options={}):
-        builder = AdRequestBuilder()
-        
-        self._interstitial.loadAd(builder.build())
+        self._interstitial.loadAd(self._get_builder(options).build())
 
     @run_on_ui_thread
     def _is_interstitial_loaded(self):
         self._loaded = self._interstitial.isLoaded()
 
     def is_interstitial_loaded(self):
-        # Values returned from run_on_ui_thread appear as
-        # NoneType. Setting the result to private variable
-        # self._loaded before returning solves this issue.
         self._is_interstitial_loaded()
         return self._loaded
 
@@ -209,6 +238,11 @@ class AndroidBridge(AdMobBridge):
     def show_interstitial(self):
         if self.is_interstitial_loaded():
             self._interstitial.show()
+    
+    @run_on_ui_thread
+    def set_rewarded_ad_listener(self, listener):
+        self._listener = AdMobRewardedVideoAdListener(listener)
+        self._rewarded.setRewardedVideoAdListener(self._listener)
 
     @run_on_ui_thread
     def load_rewarded_ad(self, unitID):
@@ -232,7 +266,6 @@ class AndroidBridge(AdMobBridge):
     def destroy_rewarded_video_ad(self):
         self._rewarded.destroy()
 
-    @run_on_ui_thread
     def _get_builder(self, options):
         builder = AdRequestBuilder()
         if options is not None:
@@ -329,6 +362,11 @@ class KivMob():
         '''  Hide current banner ad.
         '''
         self.bridge.hide_banner()
+
+    def set_rewarded_ad_listener(self, listener):
+        ''' Set listener class for rewarded ads.
+        '''
+        self.bridge.set_rewarded_ad_listener(listener)
 
     def load_rewarded_ad(self, unitID):
         ''' Load ewarded video ad.
