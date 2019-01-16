@@ -2,7 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
-.buildozer
+demo/.buildozer
 demo/kivmob.py
 demo/bin
 
