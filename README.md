@@ -68,7 +68,7 @@ Finally, build and launch the application.
 $ buildozer android debug deploy run
 ```
 
-### Apps using KivMob
+### App Showcase
 
 Please contact me via pull request or project issue if you would like your KivMob app featured in this README and/or the documentation.
 
