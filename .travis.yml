@@ -5,6 +5,7 @@ python:
   - "3.5"
   - "3.6"
 install:
+  - pip install cython==0.25
   - python setup.py install
   - pip install pytest
   - pip install pep8
