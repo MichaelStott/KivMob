@@ -5,7 +5,7 @@ python:
   - "3.5"
   - "3.6"
 before_install:
-  - sudo add-apt-repository ppa:kivy-team/kivy
+  - sudo add-apt-repository ppa:kivy-team/kivy -y
   - sudo apt-get install python-kivy
   - sudo apt-get install python3-kivy
 install:
