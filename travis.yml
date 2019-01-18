@@ -7,4 +7,7 @@ python:
 install:
   - python setup.py install
   - pip install pytest
-script: pytest
+  - pip install pep8
+script: 
+    pep8
+    pytest
