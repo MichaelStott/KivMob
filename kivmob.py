@@ -102,50 +102,49 @@ class TestIds():
 class AdMobBridge():
 
     def __init__(self, appID):
-        Logger.info('KivMob: __init__ called.')
+        pass
         
     def add_test_device(self, testID):
-        Logger.info('KivMob: add_test_device() called.')
+        pass
 
     def is_interstitial_loaded(self):
-        Logger.info('KivMob: is_interstitial_loaded() called.')
         return False
         
     def new_banner(self, unitID, top_pos=True):
-        Logger.info('KivMob: new_banner() called.')
+        pass
     
     def new_interstitial(self, unitID):
-        Logger.info('KivMob: new_interstitial() called.')
+        pass
     
     def request_banner(self, options):
-        Logger.info('KivMob: request_banner() called.')
+        pass
 
     def request_interstitial(self, options):
-        Logger.info('KivMob: request_interstitial() called.')
+        pass
         
     def show_banner(self):
-        Logger.info('KivMob: show_banner() called.')
+        pass
 
     def show_interstitial(self):
-        Logger.info('KivMob: show_interstitial() called.')
-    
+        pass
+
     def destroy_banner(self):
-        Logger.info('KivMob: destroy_banner() called.')
+        pass
 
     def destroy_interstitial(self):
-        Logger.info('KivMob: destroy_interstitial() called.')
+        pass
 
     def hide_banner(self):
-        Logger.info('KivMob: hide_banner() called.')
+        pass
 
     def set_rewarded_ad_listener(self, listener):
-        Logger.info('KivMob: set_rewarded_ad_listener() called.')
+        pass
 
     def load_rewarded_ad(self, unitID):
-        Logger.info('KivMob: load_rewarded_ad() called.')
+        pass
 
     def show_rewarded_ad(self):
-        Logger.info('KivMob: show_rewarded_ad() called.')
+        pass
 
 
 class RewardedListenerInterface():
@@ -290,6 +289,7 @@ class KivMob():
     '''
 
     def __init__(self, appID):
+        Logger.info('KivMob: __init__ called.')
         self._banner_top_pos = True
         if platform == 'android':
             Logger.info('KivMob: Android platform detected.')
@@ -307,6 +307,7 @@ class KivMob():
         :type device: string
         :param device: The test device ID of the physical android device you are testing on.
         '''
+        Logger.info('KivMob: add_test_device() called.')
         self.bridge.add_test_device(device)
         
     def new_banner(self, unitID, top_pos=True):
@@ -315,67 +316,79 @@ class KivMob():
         :type unitID: string
         :param unitID: AdMob banner ID for mobile application.
         '''
-        self._banner_top_pos = top_pos
+        Logger.info('KivMob: new_banner() called.')
         self.bridge.new_banner(unitID, top_pos)
 
     def new_interstitial(self, options={}):
         ''' Create a new mobile interstitial ad.
         '''
+        Logger.info('KivMob: new_interstitial() called.')
         self.bridge.new_interstitial(options)
 
     def is_interstitial_loaded(self):
         ''' Check if the interstitial ad has loaded.
         '''
+        Logger.info('KivMob: is_interstitial_loaded() called.')
         return self.bridge.is_interstitial_loaded()
 
     def request_banner(self, options={}):
         ''' Request a new banner ad from AdMob.
         '''
+        Logger.info('KivMob: request_banner() called.')
         self.bridge.request_banner(options)
         
     def request_interstitial(self, options={}):
         ''' Request a new interstitial ad from AdMob.
         '''
+        Logger.info('KivMob: request_interstitial() called.')
         self.bridge.request_interstitial(options)
         
     def show_banner(self):
         ''' Display banner ad.
         '''
+        Logger.info('KivMob: show_banner() called.')
         self.bridge.show_banner()
 
     def show_interstitial(self):
         ''' Display interstitial ad.
         '''
+        Logger.info('KivMob: show_interstitial() called.')
         self.bridge.show_interstitial()
 
     def destroy_banner(self):
         ''' Destroy banner ad.
         '''
+        Logger.info('KivMob: destroy_banner() called.')
         self.bridge.destroy_banner()
 
     def destroy_interstitial(self):
         ''' Destroy interstitial ad.
         '''
+        Logger.info('KivMob: destroy_interstitial() called.')
         self.bridge.destroy_interstitial()
 
     def hide_banner(self):
         '''  Hide current banner ad.
         '''
+        Logger.info('KivMob: hide_banner() called.')
         self.bridge.hide_banner()
 
     def set_rewarded_ad_listener(self, listener):
         ''' Set listener class for rewarded ads.
         '''
+        Logger.info('KivMob: set_rewarded_ad_listener() called.')
         self.bridge.set_rewarded_ad_listener(listener)
 
     def load_rewarded_ad(self, unitID):
         ''' Load ewarded video ad.
         '''
+        Logger.info('KivMob: load_rewarded_ad() called.')
         self.bridge.load_rewarded_ad(unitID)
 
     def show_rewarded_ad(self):
         ''' Display rewarded video ad.
         '''
+        Logger.info('KivMob: show_rewarded_ad() called.')
         self.bridge.show_rewarded_ad()
 
 
