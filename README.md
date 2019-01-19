@@ -7,7 +7,7 @@
 Allows developers to monetize their [Kivy] mobile applications using [Google AdMob].
 
   - No need to change internal Android project manifest templates, Java code, or manually add external libraries.
-  - Banner, interstitial, and rewarded video ads.
+  - Supports banner, interstitial, and rewarded video ads.
 
 
 ### Installation
