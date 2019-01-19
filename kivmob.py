@@ -14,23 +14,27 @@ if platform == 'android':
         AdListener = autoclass('com.google.android.gms.ads.AdListener')
         AdMobAdapter = autoclass('com.google.ads.mediation.admob.AdMobAdapter')
         AdRequest = autoclass('com.google.android.gms.ads.AdRequest')
-        AdRequestBuilder = autoclass('com.google.android.gms.ads.AdRequest$Builder')
+        AdRequestBuilder = autoclass(
+            'com.google.android.gms.ads.AdRequest$Builder')
         AdSize = autoclass('com.google.android.gms.ads.AdSize')
         AdView = autoclass('com.google.android.gms.ads.AdView')
         Bundle = autoclass('android.os.Bundle')
         Gravity = autoclass('android.view.Gravity')
         InterstitialAd = autoclass('com.google.android.gms.ads.InterstitialAd')
-        LayoutParams = autoclass('android.view.ViewGroup$LayoutParams') 
+        LayoutParams = autoclass('android.view.ViewGroup$LayoutParams')
         LinearLayout = autoclass('android.widget.LinearLayout')
         MobileAds = autoclass('com.google.android.gms.ads.MobileAds')
         RewardItem = autoclass('com.google.android.gms.ads.reward.RewardItem')
-        RewardedVideoAd = autoclass('com.google.android.gms.ads.reward.RewardedVideoAd')
-        RewardedVideoAdListener = autoclass('com.google.android.gms.ads.reward.RewardedVideoAdListener')
+        RewardedVideoAd = autoclass(
+            'com.google.android.gms.ads.reward.RewardedVideoAd')
+        RewardedVideoAdListener = autoclass(
+            'com.google.android.gms.ads.reward.RewardedVideoAdListener')
         View = autoclass('android.view.View')
 
         class AdMobRewardedVideoAdListener(PythonJavaClass):
 
-            __javainterfaces__ = ('com.google.android.gms.ads.reward.RewardedVideoAdListener', )
+            __javainterfaces__ = (
+                'com.google.android.gms.ads.reward.RewardedVideoAdListener', )
             __javacontext__ = 'app'
 
             def __init__(self, listener):
@@ -39,11 +43,13 @@ if platform == 'android':
             @java_method('(Lcom/google/android/gms/ads/reward/RewardItem;)V')
             def onRewarded(self, reward):
                 Logger.info('KivMob: onRewarded() called.')
-                self._listener.on_rewarded(reward.getType(), reward.getAmount())
+                self._listener.on_rewarded(
+                    reward.getType(), reward.getAmount())
 
             @java_method('()V')
             def onRewardedVideoAdLeftApplication(self):
-                Logger.info('KivMob: onRewardedVideoAdLeftApplication() called.')
+                Logger.info(
+                    'KivMob: onRewardedVideoAdLeftApplication() called.')
                 self._listener.on_rewarded_video_ad_left_application()
 
             @java_method('()V')
@@ -76,8 +82,9 @@ if platform == 'android':
             def onRewardedVideoCompleted(self):
                 Logger.info('KivMob: onRewardedVideoCompleted() called.')
                 self._listener.on_rewarded_video_ad_completed()
-    except:
-        Logger.error('KivMob: Cannot load AdMob classes. Check buildozer.spec configuration.')
+    except BaseException:
+        Logger.error(
+            'KivMob: Cannot load AdMob classes. Check buildozer.spec.')
 else:
     class AdMobRewardedVideoAdListener():
         pass
@@ -86,42 +93,41 @@ else:
         pass
 
 
-
 class TestIds():
-    """ Enum of test ad ids provided by AdMob. This allows developers to test displaying ad
-        without setting up an AdMob account.
+    """ Enum of test ad ids provided by AdMob. This allows developers to
+        test displaying ad without setting up an AdMob account.
     """
 
     APP = "ca-app-pub-3940256099942544~3347511713"
-    BANNER =  "ca-app-pub-3940256099942544/6300978111"
+    BANNER = "ca-app-pub-3940256099942544/6300978111"
     INTERSTITIAL = "ca-app-pub-3940256099942544/1033173712"
     INTERSTITIAL_VIDEO = "ca-app-pub-3940256099942544/8691691433"
     REWARDED_VIDEO = "ca-app-pub-3940256099942544/5224354917"
-    
+
 
 class AdMobBridge():
 
     def __init__(self, appID):
         pass
-        
+
     def add_test_device(self, testID):
         pass
 
     def is_interstitial_loaded(self):
         return False
-        
+
     def new_banner(self, unitID, top_pos=True):
         pass
-    
+
     def new_interstitial(self, unitID):
         pass
-    
+
     def request_banner(self, options):
         pass
 
     def request_interstitial(self, options):
         pass
-        
+
     def show_banner(self):
         pass
 
@@ -172,8 +178,8 @@ class RewardedListenerInterface():
 
     def on_rewarded_video_ad_completed(self):
         pass
-        
-        
+
+
 class AndroidBridge(AdMobBridge):
 
     @run_on_ui_thread
@@ -182,7 +188,8 @@ class AndroidBridge(AdMobBridge):
         MobileAds.initialize(activity.mActivity, appID)
         self._adview = AdView(activity.mActivity)
         self._interstitial = InterstitialAd(activity.mActivity)
-        self._rewarded = MobileAds.getRewardedVideoAdInstance(activity.mActivity)
+        self._rewarded = MobileAds.getRewardedVideoAdInstance(
+            activity.mActivity)
         self._test_devices = []
 
     @run_on_ui_thread
@@ -195,16 +202,20 @@ class AndroidBridge(AdMobBridge):
         self._adview.setAdUnitId(unitID)
         self._adview.setAdSize(AdSize.SMART_BANNER)
         self._adview.setVisibility(View.GONE)
-        adLayoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+        adLayoutParams = LayoutParams(
+            LayoutParams.MATCH_PARENT,
+            LayoutParams.WRAP_CONTENT)
         self._adview.setLayoutParams(adLayoutParams)
         layout = LinearLayout(activity.mActivity)
         if not top_pos:
             layout.setGravity(Gravity.BOTTOM)
         layout.addView(self._adview)
-        layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+        layoutParams = LayoutParams(
+            LayoutParams.MATCH_PARENT,
+            LayoutParams.MATCH_PARENT)
         layout.setLayoutParams(layoutParams)
         activity.addContentView(layout, layoutParams)
-        
+
     @run_on_ui_thread
     def request_banner(self, options={}):
         self._adview.loadAd(self._get_builder(options).build())
@@ -237,7 +248,7 @@ class AndroidBridge(AdMobBridge):
     def show_interstitial(self):
         if self.is_interstitial_loaded():
             self._interstitial.show()
-    
+
     @run_on_ui_thread
     def set_rewarded_ad_listener(self, listener):
         self._listener = AdMobRewardedVideoAdListener(listener)
@@ -256,7 +267,7 @@ class AndroidBridge(AdMobBridge):
     @run_on_ui_thread
     def destroy_banner(self):
         self._adview.destroy()
-    
+
     @run_on_ui_thread
     def destroy_interstitial(self):
         self._interstitial.destroy()
@@ -272,7 +283,9 @@ class AndroidBridge(AdMobBridge):
                 builder.tagForChildDirectedTreatment(options["children"])
             if "family" in options:
                 extras = Bundle()
-                extras.putBoolean("is_designed_for_families", options['family'])
+                extras.putBoolean(
+                    "is_designed_for_families",
+                    options['family'])
                 builder.addNetworkExtrasBundle(AdMobAdapter, extras)
         for test_device in self._test_devices:
             builder.addTestDevice(test_device)
@@ -302,14 +315,16 @@ class KivMob():
             self.bridge = AdMobBridge(appID)
 
     def add_test_device(self, device):
-        ''' Add test device ID, which will tigger test ads to be displayed on that device
+        ''' Add test device ID, which will tigger test ads to be displayed on
+        that device
 
         :type device: string
-        :param device: The test device ID of the physical android device you are testing on.
+        :param device: The test device ID of the physical android device you
+        are testing on.
         '''
         Logger.info('KivMob: add_test_device() called.')
         self.bridge.add_test_device(device)
-        
+
     def new_banner(self, unitID, top_pos=True):
         ''' Create a new mobile banner ad.
 
@@ -336,13 +351,13 @@ class KivMob():
         '''
         Logger.info('KivMob: request_banner() called.')
         self.bridge.request_banner(options)
-        
+
     def request_interstitial(self, options={}):
         ''' Request a new interstitial ad from AdMob.
         '''
         Logger.info('KivMob: request_interstitial() called.')
         self.bridge.request_interstitial(options)
-        
+
     def show_banner(self):
         ''' Display banner ad.
         '''
@@ -393,10 +408,10 @@ class KivMob():
 
 
 if __name__ == '__main__':
-    print("\033[92m  _  ___       __  __       _\n" +\
-          " | |/ (_)_   _|  \/  | ___ | |__\n" +\
-          " | ' /| \ \ / / |\/| |/ _ \| '_ \\\n" +\
-          " | . \| |\ V /| |  | | (_) | |_) |\n" +\
-          " |_|\_\_| \_/ |_|  |_|\___/|_.__/\n\033[0m")
+    print("\033[92m  _  ___       __  __       _\n"
+          " | |/ (_)_   _|  \\/  | ___ | |__\n"
+          " | ' /| \\ \\ / / |\\/| |/ _ \\| '_ \\\n"
+          " | . \\| |\\ V /| |  | | (_) | |_) |\n"
+          " |_|\\_\\_| \\_/ |_|  |_|\\___/|_.__/\n\033[0m")
+    print(" AdMob support for Kivy\n")
     print(" Michael Stott, 2019\n")
-    
