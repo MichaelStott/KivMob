@@ -1,6 +1,7 @@
 ![KivMob](https://raw.githubusercontent.com/MichaelStott/KivMob/master/demo/assets/kivmob-title.png)
 
 [![Build Status](https://travis-ci.com/MichaelStott/KivMob.svg?branch=master)](https://travis-ci.com/MichaelStott/KivMob)
+[![PyPI version](https://badge.fury.io/py/kivmob.svg)](https://badge.fury.io/py/kivmob)
 [![Python 2.7](https://img.shields.io/badge/python-2.7-green.svg)](https://www.python.org/downloads/release/python-270/)
 [![Downloads](https://pepy.tech/badge/kivmob)](https://pepy.tech/project/kivmob)
 [![Maintainability](https://api.codeclimate.com/v1/badges/add8cd9bd9600d898b79/maintainability)](https://codeclimate.com/github/MichaelStott/KivMob/maintainability)
@@ -15,7 +16,7 @@ Allows developers to monetize their [Kivy] mobile applications using [Google AdM
 
 You can install KivMob with the following command.
 ```sh
-$ pip install  git+https://github.com/MichaelStott/KivMob
+$ pip install kivmob
 ```
 
 ### Demo Screenshot
