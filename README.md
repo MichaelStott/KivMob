@@ -72,12 +72,21 @@ $ buildozer android debug deploy run
 
 ### App Showcase
 
-Please contact me via pull request or project issue if you would like your KivMob app featured in this README and/or the documentation.
+_Please contact me via pull request or project issue if you would like your KivMob app featured in this README and the documentation._
 
-### Other
+<!-- List alphabetically please.  -->
+| App | Playstore Link | Author |
+| ------ | ------ | ------ |
+| Gloworld | https://play.google.com/store/apps/details?id=com.worldglowfree.dom.com.world.glowfree | Prozee Games, [thegameguy] |
+
+### Other 
 
 KivMob is an open source project not associated with AdMob. Please abide by their policies when designing and testing your application.
 
+<!-- Links pertinent to README -->
 [Google AdMob]: <https://www.google.com/admob/>
 [Kivy]: <https://kivy.org/>
 [Buildozer]: <https://github.com/kivy/buildozer>
+
+<!-- App showcase author links -->
+[thegameguy]: <https://github.com/thegameguy>
