@@ -169,7 +169,7 @@ class KivMobDemo(App):
         self.ads.new_interstitial(TestIds.INTERSTITIAL)
         self.ads.request_banner()
         self.ads.request_interstitial()
-        #self.ads.set_rewarded_ad_listener(RewardedListenerInterface())
+        self.ads.set_rewarded_ad_listener(RewardedListenerInterface())
         self.ads.load_rewarded_ad(TestIds.REWARDED_VIDEO)
         self.toggled = False
         return KivMobDemoUI()

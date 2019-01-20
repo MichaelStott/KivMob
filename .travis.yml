@@ -1,10 +1,17 @@
 language: python
 python:
-  - "2.7"
-  - "3.4"
-  - "3.5"
-  - "3.6"
+- '2.7'
+- '3.4'
+- '3.5'
+- '3.6'
 install:
-  - pip install pycodestyle
-script: 
-  - pycodestyle kivmob.py
+- pip install pycodestyle
+script:
+- pycodestyle kivmob.py
+deploy:
+  provider: pypi
+  user: mstott6
+  on:
+    branch: master
+  password:
+    secure: oB/+9g6UPt21Kx1Kl50rjuJtdS+CQWJWRVdxJtyzibY4VvyYxgE7UR3Yu6kmFunaGBKSI4Nz5aFNecgDVVyXklEtIjqKZMctehKuXLkdEwlVUdAJGvDG7xd4rtGGZHa/aQH5Fuyk3TQqG92bKtjZtPyh2SntXdJYO1HE4DsoYSCyCFMFZtnsoAW/bPonF5QM0JpT70I0fazPCHKW21dywC4sEX8b4d3k52IviLlXIAcJLkjQeStF4eFZ+P3eGYEqd9XSG1uT63fmnf+0p54LgGMkw2lNEfU/sS+hg0LLft2wpdoyTdIRx5pEg8iED3ZnlCQcB0/X5dXsodF+jWBCRTUeRbby8mqs9mGPzivkmsYjBXpOcAY434krsBGs0BohrMzLy02MXZcQkzv6sahzf4Pt+hB7OLAcWNEuRc4jfooLQVtfzuODuDoipuPiiYbC5UzFSVT8l2lXlxaBM9EssBWCG8UD4ZDQ0q0T98K9W/HXglXav8fyu/AFpCWuXgwzGLUNAKptswLQ63ty3dQwS81s1pHxKCgk8Zzhp++8J33RZOUsyZizoAGzpSPYEGoAoC/g//RCrPRkkcvDWlZSVTDJZ5XrCuKUkoFhOTTQXgeR1pEVlkNNlRl9kiZzZrbAxhIQZoosQTFf/okdAg0EoTNL+97c3mkuMmtNIanCryE=
