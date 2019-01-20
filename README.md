@@ -75,7 +75,7 @@ $ buildozer android debug deploy run
 _Please contact me via pull request or project issue if you would like your KivMob app featured in this README and the documentation._
 
 <!-- List alphabetically please.  -->
-| App | Playstore Link | Author |
+| App | Play Store Link | Author |
 | ------ | ------ | ------ |
 | Gloworld | https://play.google.com/store/apps/details?id=com.worldglowfree.dom.com.world.glowfree | Prozee Games, [thegameguy] |
 
