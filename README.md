@@ -80,7 +80,6 @@ _Please contact me via pull request or project issue if you would like your KivM
 <!-- List alphabetically please.  -->
 | App | Play Store Link | Author |
 | ------ | ------ | ------ |
-| Learn Python Offline | https://play.google.com/store/apps/details?id=com.prog.ders.eng | [Yunus Ceyhan] |
 | Gloworld | https://play.google.com/store/apps/details?id=com.worldglowfree.dom.com.world.glowfree | Prozee Games, [thegameguy] |
 | MIUI Hidden Settings | https://play.google.com/store/apps/details?id=com.ceyhan.sets | [Yunus Ceyhan] |
 | Themes for MIUI | https://play.google.com/store/apps/details?id=com.ceyhan.tema | [Yunus Ceyhan] |
