@@ -75,7 +75,7 @@ $ buildozer android debug deploy run
 
 ### App Showcase
 
-_Please open pull request or project issue if you would like your KivMob app featured in this README and the documentation.
+_Please open pull request or project issue if you would like your KivMob app featured in this README and the documentation._
 
 <!-- List alphabetically please.  -->
 | App | Play Store Link | Author |
