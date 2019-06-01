@@ -10,11 +10,9 @@ KivMob Documentation
    :maxdepth: 6
    :caption: Contents:
 
+   overview
    kivmob
    tutorial
-   banners
-   interstitials
-   rewarded_video
    resources
    about
 
