@@ -80,8 +80,8 @@ _Please open a pull request or project issue if you would like your KivMob app f
 <!-- List alphabetically please.  -->
 | App | Play Store Link | Author |
 | ------ | ------ | ------ |
-| PyTool USB Serial Free |  https://play.google.com/store/apps/details?id=com.quanlin.pytoolusbserialfree | [Quan Lin] |
 | MIUI Hidden Settings | https://play.google.com/store/apps/details?id=com.ceyhan.sets | [Yunus Ceyhan] |
+| PyTool USB Serial Free |  https://play.google.com/store/apps/details?id=com.quanlin.pytoolusbserialfree | [Quan Lin] |
 | Themes for MIUI | https://play.google.com/store/apps/details?id=com.ceyhan.tema | [Yunus Ceyhan] |
 
 ### Other 
