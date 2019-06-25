@@ -80,6 +80,7 @@ _Please open a pull request or project issue if you would like your KivMob app f
 <!-- List alphabetically please.  -->
 | App | Play Store Link | Author |
 | ------ | ------ | ------ |
+| PyTool USB Serial Free |  https://play.google.com/store/apps/details?id=com.quanlin.pytoolusbserialfree | [Quan Lin] |
 | MIUI Hidden Settings | https://play.google.com/store/apps/details?id=com.ceyhan.sets | [Yunus Ceyhan] |
 | Themes for MIUI | https://play.google.com/store/apps/details?id=com.ceyhan.tema | [Yunus Ceyhan] |
 
@@ -93,5 +94,7 @@ KivMob is an open source project not associated with AdMob. Please abide by thei
 [Buildozer]: <https://github.com/kivy/buildozer>
 
 <!-- App showcase author links -->
+[Quan Lin]: <https://github.com/jacklinquan>
 [thegameguy]: <https://github.com/thegameguy>
 [Yunus Ceyhan]: <https://github.com/yunus-ceyhan>
+
