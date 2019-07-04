@@ -125,7 +125,13 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, "KivMob.tex", u"KivMob Documentation", u"Michael Stott", "manual")
+    (
+        master_doc,
+        "KivMob.tex",
+        u"KivMob Documentation",
+        u"Michael Stott",
+        "manual",
+    )
 ]
 
 

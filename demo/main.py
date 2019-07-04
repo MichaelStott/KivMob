@@ -141,7 +141,9 @@ class KivMobDemoUI(FloatLayout):
         ]
         self.ids.scr_mngr.transition.direction = "left"
         self.ids.scr_mngr.current = name
-        self.interstitial_snack = Snackbar(text="Interstitial has not yet loaded.")
+        self.interstitial_snack = Snackbar(
+            text="Interstitial has not yet loaded."
+        )
 
     def back_to_menu(self):
         self.ids.scr_mngr.transition.direction = "right"
