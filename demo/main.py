@@ -10,9 +10,9 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import ScreenManager
 from kivy.uix.image import Image
 
-if platform not in ('android', 'ios'):
+if platform not in ("android", "ios"):
     # Approximate dimensions of mobile phone.
-    Config.set('graphics', 'resizable', '0')
+    Config.set("graphics", "resizable", "0")
     Window.size = (400, 600)
 
 __version__ = "1.0"
@@ -23,7 +23,8 @@ from kivymd.list import ILeftBody
 from kivymd.label import MDLabel
 from kivymd.snackbar import Snackbar
 
-Builder.load_string("""
+Builder.load_string(
+    """
 #:import kivy kivy
 
 #:import Toolbar kivymd.toolbar.Toolbar
@@ -124,7 +125,8 @@ Builder.load_string("""
                     elevation_normal: 2
                     pos_hint: {'center_x': 0.5, 'center_y': 0.25}
                     on_press: app.ads.show_rewarded_ad()
-""")
+"""
+)
 
 
 class AvatarIconWidget(ILeftBody, Image):
@@ -132,17 +134,17 @@ class AvatarIconWidget(ILeftBody, Image):
 
 
 class KivMobDemoUI(FloatLayout):
-
     def switch_to_screen(self, name, title):
         self.ids.toolbar.title = title
-        self.ids.toolbar.left_action_items = [['chevron-left', lambda x: self.back_to_menu()]]
-        self.ids.scr_mngr.transition.direction = 'left'
+        self.ids.toolbar.left_action_items = [
+            ["chevron-left", lambda x: self.back_to_menu()]
+        ]
+        self.ids.scr_mngr.transition.direction = "left"
         self.ids.scr_mngr.current = name
         self.interstitial_snack = Snackbar(text="Interstitial has not yet loaded.")
 
-
     def back_to_menu(self):
-        self.ids.scr_mngr.transition.direction = 'right'
+        self.ids.scr_mngr.transition.direction = "right"
         self.ids.scr_mngr.current = "menu"
         self.ids.toolbar.title = "KivMob 2.0"
         self.ids.toolbar.left_action_items = []
@@ -156,9 +158,9 @@ class KivMobDemoUI(FloatLayout):
     def open_dialog(self):
         pass
 
-        
+
 class KivMobDemo(App):
-    
+
     theme_cls = ThemeManager()
 
     show_banner = False
