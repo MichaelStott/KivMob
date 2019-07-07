@@ -49,6 +49,9 @@ class KivMobTest(App):
         ads.request_interstitial()
         return Button(text='Show Interstitial',
                       on_release=lambda a:ads.show_interstitial())
+                      
+    def on_resume(self):
+        ads.request_interstitial()
 
 KivMobTest().run()
 ```
