@@ -1,11 +1,15 @@
-![KivMob](https://raw.githubusercontent.com/MichaelStott/KivMob/master/demo/assets/kivmob-title.png)
-
-[![Build Status](https://travis-ci.com/MichaelStott/KivMob.svg?branch=master)](https://travis-ci.com/MichaelStott/KivMob)
-[![PyPI version](https://badge.fury.io/py/kivmob.svg)](https://badge.fury.io/py/kivmob)
-[![Python 2.7|3.7](https://img.shields.io/badge/python-2.7|3.7-green.svg)](https://www.python.org/downloads/release/python-270/)
-[![Downloads](https://pepy.tech/badge/kivmob)](https://pepy.tech/project/kivmob)
-[![Maintainability](https://api.codeclimate.com/v1/badges/add8cd9bd9600d898b79/maintainability)](https://codeclimate.com/github/MichaelStott/KivMob/maintainability)
-<a href="https://github.com/python/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
+<p align="center">
+  <img src="https://raw.githubusercontent.com/MichaelStott/KivMob/master/demo/assets/kivmob-title.png">
+</p>
+<h2 align="center">AdMob support for Kivy</h2>
+<p align="center">
+  <a href="https://travis-ci.com/MichaelStott/KivMob"><img alt="Build Status" src="https://travis-ci.com/MichaelStott/KivMob.svg?branch=master"></a>
+  <a href="https://badge.fury.io/py/kivmob"><img alt="pypi" src="https://badge.fury.io/py/kivmob.svg"></a>
+  <a href="https://www.python.org/downloads/release/python-270/"><img alt="Python Version" src="https://img.shields.io/badge/python-2.7|3.7-green.svg"></a>
+  <a href="https://pepy.tech/project/kivmob"><img alt="Code Climate" src="https://pepy.tech/badge/kivmob"></a>
+  <a href="https://codeclimate.com/github/MichaelStott/KivMob/maintainability"><img alt="Code Climate" src="https://api.codeclimate.com/v1/badges/add8cd9bd9600d898b79/maintainability"></a>
+  <a href="https://github.com/python/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
+</p>
 
 Allows developers to monetize their [Kivy] mobile applications using [Google AdMob].
 
