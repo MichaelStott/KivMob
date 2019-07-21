@@ -48,14 +48,14 @@ from kivy.uix.button import Button
 class KivMobTest(App):
     
     def build(self):
-        ads = KivMob(TestIds.APP)
-        ads.new_interstitial(TestIds.INTERSTITIAL)
-        ads.request_interstitial()
+        self.ads = KivMob(TestIds.APP)
+        self.ads.new_interstitial(TestIds.INTERSTITIAL)
+        self.ads.request_interstitial()
         return Button(text='Show Interstitial',
-                      on_release=lambda a:ads.show_interstitial())
+                      on_release=lambda a:self.ads.show_interstitial())
                       
     def on_resume(self):
-        ads.request_interstitial()
+        self.ads.request_interstitial()
 
 KivMobTest().run()
 ```
