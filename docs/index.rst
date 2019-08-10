@@ -10,11 +10,40 @@ KivMob Documentation
    :maxdepth: 6
    :caption: Contents:
 
-   overview
    kivmob
-   tutorial
    resources
+   contributing
    about
+
+Overview
+========
+
+KivMob is a simple-to-use, opinionated Python library that allows developers to easily
+monetize their mobile Kivy applications using Google AdMob, with support for banner,
+interstitial, and rewarded video ads.
+
+Currently, KivMob only offers Android support. iOS functionality is currently being scoped.
+
+
+Installation
+-----------------
+
+.. code-block:: .. bash
+
+   $ pip install kivmob
+
+
+AdMob Setup
+-------------
+
+An AdMob account is required for generating mobile ad units. Please read the official
+AdMob tutorial for information on creating an app ID and ad units:
+
+https://admob.google.com/home/get-started/
+
+Learn more about the various ad units and formats here:
+
+https://support.google.com/admob/answer/6128738?hl=en&ref_topic=7382891
 
 
 Indices and tables
