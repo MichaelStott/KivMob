@@ -13,7 +13,6 @@ KivMob Documentation
    tutorials
    kivmob
    architecture
-   contributing
    resources
    about
 

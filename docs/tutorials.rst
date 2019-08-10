@@ -77,5 +77,29 @@ Interstitial ads full-screen ads that cover the entire app screen until dismisse
 Rewarded Video Ads
 -------------------
 
-Rewarded video ads can be watched by the user in exchange for in-app rewards.
+Rewarded video ads can be watched by the user in exchange for in-app rewards. Callback
+functionality can be handled with a class that implements the RewardedListenerInterface.
 
+.. code-block:: python
+
+    from kivmob import KivMob, TestIds
+
+    from kivy.app import App
+    from kivy.uix.button import Button
+
+    class RewardedVideoTest(App):
+        """ Display an interstitial ad on button press.
+        """
+
+        def build(self):
+            self.ads = KivMob(TestIds.APP)
+            self.ads.load_rewarded_ad(TestIds.REWARDED_VIDEO)
+            self.ads.set_rewarded_ad_listener(RewardedListenerInterface())
+            return Button(text='Show Rewarded Ad',
+                          on_release=lambda a:self.ads.show_rewarded_ad())
+                        
+        def on_resume(self):
+            self.ads.request_interstitial()
+
+    if __name__ == "__main__":
+        RewardedVideoTest().run()
