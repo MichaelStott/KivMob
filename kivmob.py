@@ -366,8 +366,7 @@ class KivMob:
             that device
 
             :type device: string
-            :param device: The test device ID of the physical android device you
-            are testing on.
+            :param device: The test device ID of the Android device.
         """
         Logger.info("KivMob: add_test_device() called.")
         self.bridge.add_test_device(device)
