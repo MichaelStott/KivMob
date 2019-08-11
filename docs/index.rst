@@ -3,23 +3,40 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-KivMob Documentation
-====================
+.. image:: kivmob-title.png
 
 .. toctree::
    :maxdepth: 6
    :caption: Contents:
 
-   overview
+   tutorials
    kivmob
-   tutorial
+   architecture
    resources
    about
 
+Overview
+========
 
-Indices and tables
-==================
+KivMob is a simple, opinionated Python library that allows developers to easily
+monetize their Kivy mobile applications using Google AdMob. It is available for
+both Python 2 & 3.
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+Currently, KivMob only supports the Android platform. iOS support is under development.
+
+Setup
+-----------------
+
+.. code-block:: sh
+
+    $ pip3 install kivmob
+
+
+AdMob Account Setup
+--------------------
+
+An AdMob account is required for generating and serving mobile ads. See the following link to get
+started:
+
+https://admob.google.com/home/get-started/
+

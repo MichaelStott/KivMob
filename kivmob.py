@@ -108,10 +108,19 @@ class TestIds:
         test displaying ad without setting up an AdMob account.
     """
 
+    """ Test AdMob App ID """
     APP = "ca-app-pub-3940256099942544~3347511713"
+
+    """ Test Banner Ad ID """
     BANNER = "ca-app-pub-3940256099942544/6300978111"
+
+    """ Test Interstitial Ad ID """
     INTERSTITIAL = "ca-app-pub-3940256099942544/1033173712"
+
+    """ Test Interstitial Video Ad ID """
     INTERSTITIAL_VIDEO = "ca-app-pub-3940256099942544/8691691433"
+
+    """ Test Rewarded Video Ad ID """
     REWARDED_VIDEO = "ca-app-pub-3940256099942544/5224354917"
 
 
@@ -163,28 +172,57 @@ class AdMobBridge:
 
 
 class RewardedListenerInterface:
+    """ Interface for objects that handle rewarded video ad
+        callback functions
+    """
+
     def on_rewarded(self, reward_name, reward_amount):
+        """ Called when the video completes
+
+            :type reward_name: string
+            :param reward_name: Name of the reward.
+            :type reward_amount: string
+            :param reward_amount: Amount of the reward.
+        """
         pass
 
     def on_rewarded_video_ad_left_application(self):
+        """ Called when the user closes the application while
+            the video is playing.
+        """
         pass
 
     def on_rewarded_video_ad_closed(self):
+        """ Called when the user manually closes the ad before completion.
+        """
         pass
 
     def on_rewarded_video_ad_failed_to_load(self, error_code):
+        """ Called when the rewarded video ad fails to load.
+
+            :type error_code: int
+            :param error_code: Integer code that corresponds to the error.
+        """
         pass
 
     def on_rewarded_video_ad_loaded(self):
+        """ Called when the rewarded ad finishes loading.
+        """
         pass
 
     def on_rewarded_video_ad_opened(self):
+        """ Called when the rewarded ad is opened.
+        """
         pass
 
     def on_rewarded_video_ad_started(self):
+        """ Called when the rewarded video ad starts.
+        """
         pass
 
     def on_rewarded_video_ad_completed(self):
+        """ Called when the rewarded video ad completes.
+        """
         pass
 
 
@@ -324,11 +362,10 @@ class KivMob:
 
     def add_test_device(self, device):
         """ Add test device ID, which will tigger test ads to be displayed on
-        that device
+            that device
 
-        :type device: string
-        :param device: The test device ID of the physical android device you
-        are testing on.
+            :type device: string
+            :param device: The test device ID of the Android device.
         """
         Logger.info("KivMob: add_test_device() called.")
         self.bridge.add_test_device(device)
@@ -336,17 +373,23 @@ class KivMob:
     def new_banner(self, unitID, top_pos=True):
         """ Create a new mobile banner ad.
 
-        :type unitID: string
-        :param unitID: AdMob banner ID for mobile application.
+            :type unitID: string
+            :param unitID: AdMob banner ID for mobile application.
+            :type top_pos: boolean
+            :param top_pos: Positions banner at the top of the page if True,
+            bottom if otherwise.
         """
         Logger.info("KivMob: new_banner() called.")
         self.bridge.new_banner(unitID, top_pos)
 
-    def new_interstitial(self, options={}):
+    def new_interstitial(self, unitID):
         """ Create a new mobile interstitial ad.
+
+            :type unitID: string
+            :param unitID: AdMob interstitial ID for mobile application.
         """
         Logger.info("KivMob: new_interstitial() called.")
-        self.bridge.new_interstitial(options)
+        self.bridge.new_interstitial(unitID)
 
     def is_interstitial_loaded(self):
         """ Check if the interstitial ad has loaded.
@@ -367,25 +410,25 @@ class KivMob:
         self.bridge.request_interstitial(options)
 
     def show_banner(self):
-        """ Display banner ad.
+        """ Displays banner ad, if it has loaded.
         """
         Logger.info("KivMob: show_banner() called.")
         self.bridge.show_banner()
 
     def show_interstitial(self):
-        """ Display interstitial ad.
+        """ Displays interstitial ad, if it has loaded.
         """
         Logger.info("KivMob: show_interstitial() called.")
         self.bridge.show_interstitial()
 
     def destroy_banner(self):
-        """ Destroy banner ad.
+        """ Destroys current banner ad.
         """
         Logger.info("KivMob: destroy_banner() called.")
         self.bridge.destroy_banner()
 
     def destroy_interstitial(self):
-        """ Destroy interstitial ad.
+        """ Destroys current interstitial ad.
         """
         Logger.info("KivMob: destroy_interstitial() called.")
         self.bridge.destroy_interstitial()
@@ -397,13 +440,20 @@ class KivMob:
         self.bridge.hide_banner()
 
     def set_rewarded_ad_listener(self, listener):
-        """ Set listener class for rewarded ads.
+        """ Set listener object for rewarded video ads.
+
+            :type listener: AdMobRewardedVideoAdListener
+            :param listener: Handles callback functionality for
+            rewarded video ads.
         """
         Logger.info("KivMob: set_rewarded_ad_listener() called.")
         self.bridge.set_rewarded_ad_listener(listener)
 
     def load_rewarded_ad(self, unitID):
-        """ Load ewarded video ad.
+        """ Load rewarded video ad.
+
+            :type unitID: string
+            :param unitID: AdMob rewarded video ID for mobile application.
         """
         Logger.info("KivMob: load_rewarded_ad() called.")
         self.bridge.load_rewarded_ad(unitID)
