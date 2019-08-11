@@ -119,7 +119,7 @@ class TestIds:
 
     """ Test Interstitial Video Ad ID """
     INTERSTITIAL_VIDEO = "ca-app-pub-3940256099942544/8691691433"
-    
+
     """ Test Rewarded Video Ad ID """
     REWARDED_VIDEO = "ca-app-pub-3940256099942544/5224354917"
 
@@ -201,7 +201,7 @@ class RewardedListenerInterface:
         """ Called when the rewarded video ad fails to load.
 
             :type error_code: int
-            :param error_code: Integer code that corresponds to the Admob error. 
+            :param error_code: Integer code that corresponds to the error.
         """
         pass
 
@@ -227,7 +227,6 @@ class RewardedListenerInterface:
 
 
 class AndroidBridge(AdMobBridge):
-
     @run_on_ui_thread
     def __init__(self, appID):
         self._loaded = False
