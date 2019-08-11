@@ -101,7 +101,7 @@ functionality can be handled with a class implementing RewardedListenerInterface
 
 .. code-block:: python
 
-    from kivmob import KivMob, TestIds
+    from kivmob import KivMob, TestIds, RewardedListenerInterface
 
     from kivy.app import App
     from kivy.uix.button import Button
