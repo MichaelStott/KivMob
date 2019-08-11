@@ -19,7 +19,7 @@ Overview
 ========
 
 KivMob is a simple, opinionated Python library that allows developers to easily
-monetize their mobile Kivy applications using Google AdMob. It is available for
+monetize their Kivy mobile applications using Google AdMob. It is available for
 both Python 2 & 3.
 
 Currently, KivMob only supports the Android platform. iOS support is under development.

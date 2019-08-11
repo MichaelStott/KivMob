@@ -375,15 +375,20 @@ class KivMob:
 
             :type unitID: string
             :param unitID: AdMob banner ID for mobile application.
+            :type top_pos: boolean
+            :param top_pos: Positions banner at the top of the page if True, bottom if otherwise.
         """
         Logger.info("KivMob: new_banner() called.")
         self.bridge.new_banner(unitID, top_pos)
 
-    def new_interstitial(self, options={}):
+    def new_interstitial(self, unitID):
         """ Create a new mobile interstitial ad.
+
+            :type unitID: string
+            :param unitID: AdMob interstitial ID for mobile application.
         """
         Logger.info("KivMob: new_interstitial() called.")
-        self.bridge.new_interstitial(options)
+        self.bridge.new_interstitial(unitID)
 
     def is_interstitial_loaded(self):
         """ Check if the interstitial ad has loaded.
@@ -404,25 +409,25 @@ class KivMob:
         self.bridge.request_interstitial(options)
 
     def show_banner(self):
-        """ Display banner ad.
+        """ Displays banner ad, if it has loaded.
         """
         Logger.info("KivMob: show_banner() called.")
         self.bridge.show_banner()
 
     def show_interstitial(self):
-        """ Display interstitial ad.
+        """ Displays interstitial ad, if it has loaded.
         """
         Logger.info("KivMob: show_interstitial() called.")
         self.bridge.show_interstitial()
 
     def destroy_banner(self):
-        """ Destroy banner ad.
+        """ Destroys current banner ad.
         """
         Logger.info("KivMob: destroy_banner() called.")
         self.bridge.destroy_banner()
 
     def destroy_interstitial(self):
-        """ Destroy interstitial ad.
+        """ Destroys current interstitial ad.
         """
         Logger.info("KivMob: destroy_interstitial() called.")
         self.bridge.destroy_interstitial()
@@ -434,13 +439,19 @@ class KivMob:
         self.bridge.hide_banner()
 
     def set_rewarded_ad_listener(self, listener):
-        """ Set listener class for rewarded ads.
+        """ Set listener object for rewarded video ads.
+
+            :type listener: AdMobRewardedVideoAdListener 
+            :param listener: Handles callback functionality for rewarded video ads.
         """
         Logger.info("KivMob: set_rewarded_ad_listener() called.")
         self.bridge.set_rewarded_ad_listener(listener)
 
     def load_rewarded_ad(self, unitID):
-        """ Load ewarded video ad.
+        """ Load rewarded video ad.
+
+            :type unitID: string
+            :param unitID: AdMob rewarded video ID for mobile application.
         """
         Logger.info("KivMob: load_rewarded_ad() called.")
         self.bridge.load_rewarded_ad(unitID)
