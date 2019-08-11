@@ -66,7 +66,7 @@ KivMobTest().run()
 Make the following modifications to your buildozer.spec file.
 
 ```
-requirements = hostpython2, kivy, android, jnius, kivmob
+requirements = kivy, android, jnius, kivmob
 ...
 android.permissions = INTERNET, ACCESS_NETWORK_STATE
 android.api = 27
