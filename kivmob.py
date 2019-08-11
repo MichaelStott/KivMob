@@ -376,7 +376,8 @@ class KivMob:
             :type unitID: string
             :param unitID: AdMob banner ID for mobile application.
             :type top_pos: boolean
-            :param top_pos: Positions banner at the top of the page if True, bottom if otherwise.
+            :param top_pos: Positions banner at the top of the page if True,
+            bottom if otherwise.
         """
         Logger.info("KivMob: new_banner() called.")
         self.bridge.new_banner(unitID, top_pos)
@@ -441,8 +442,9 @@ class KivMob:
     def set_rewarded_ad_listener(self, listener):
         """ Set listener object for rewarded video ads.
 
-            :type listener: AdMobRewardedVideoAdListener 
-            :param listener: Handles callback functionality for rewarded video ads.
+            :type listener: AdMobRewardedVideoAdListener
+            :param listener: Handles callback functionality for
+            rewarded video ads.
         """
         Logger.info("KivMob: set_rewarded_ad_listener() called.")
         self.bridge.set_rewarded_ad_listener(listener)
