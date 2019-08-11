@@ -31,7 +31,8 @@ $ pip install kivmob
 
 ### Quickstart
 
-Create an new folder containing main.py and buildozer.spec.
+Create a new folder containing main.py and buildozer.spec.
+
 ```sh
 $ mkdir kivmob-quickstart
 $ cd kivmob-quickstart

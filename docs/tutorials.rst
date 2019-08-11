@@ -4,23 +4,42 @@ Tutorial
 Installation
 -----------------
 
-kivmob is available for download using pip:
+KivMob is available for download from the Python Package Index using *pip*:
 
 .. code-block:: sh
 
     $ pip3 install kivmob
 
-Alternatively, you can install it from the master branch via setup.py
+Alternatively, you can install it from the source via setup.py
 
 .. code-block:: sh
 
-    python3 setup.py install --user
+    $ python3 setup.py install --user
 
-Banner Ads
+Android Configuration
+---------------------
+
+Modify buildozer.spec as such:
+
+.. code-block:: sh
+
+    requirements = hostpython2, kivy, android, jnius, kivmob
+    ...
+    android.permissions = INTERNET, ACCESS_NETWORK_STATE
+    android.api = 27
+    android.minapi = 21
+    android.sdk = 24
+    android.ndk = 17b
+    android.gradle_dependencies = 'com.google.firebase:firebase-ads:10.2.0'
+    p4a.branch = master
+    # For test ads, use application ID ca-app-pub-3940256099942544~3347511713
+    android.meta_data = com.google.android.gms.ads.APPLICATION_ID={ADMOB_APP_ID_HERE}
+
+Banners
 -----------------
 
-Banner ads are rectangular text or image ads that take up a portion of the app screen. KivMob allows positioning
-on the top or bottom of the page.
+Banner ads are rectangular image or text ads that take up a portion of the app screen. KivMob allows banner ads
+to be positioned on the top or bottom of the page.
 
 .. code-block:: python
 
@@ -43,12 +62,12 @@ on the top or bottom of the page.
     if __name__ == "__main__":
         BannerTest().run()
 
-The banner ad position can be changed to the bottom of the screen by setting top_pos to False.
+The banner location can be changed to the bottom of the screen by setting *top_pos* to *False*.
 
-Interstitial Ads
+Interstitials
 -----------------
 
-Interstitial ads full-screen ads that cover the entire app screen until dismissed by the app user.
+Interstitial ads are full-screen ads that cover the entire app until dismissed by the user.
 
 .. code-block:: python
 
@@ -58,7 +77,7 @@ Interstitial ads full-screen ads that cover the entire app screen until dismisse
     from kivy.uix.button import Button
 
     class InterstitialTest(App):
-        """ Display an interstitial ad on button press.
+        """ Display an interstitial ad on button release.
         """
 
         def build(self):
@@ -74,11 +93,11 @@ Interstitial ads full-screen ads that cover the entire app screen until dismisse
     if __name__ == "__main__":
         InterstitialTest().run()
 
-Rewarded Video Ads
+Rewarded Video
 -------------------
 
-Rewarded video ads can be watched by the user in exchange for in-app rewards. Callback
-functionality can be handled with a class that implements the RewardedListenerInterface.
+Ads the user may view in exchange for in-app rewards. Callback
+functionality can be handled with a class implementing RewardedListenerInterface.
 
 .. code-block:: python
 
@@ -88,18 +107,19 @@ functionality can be handled with a class that implements the RewardedListenerIn
     from kivy.uix.button import Button
 
     class RewardedVideoTest(App):
-        """ Display an interstitial ad on button press.
+        """ Display a rewarded video ad on button release.
         """
 
         def build(self):
             self.ads = KivMob(TestIds.APP)
             self.ads.load_rewarded_ad(TestIds.REWARDED_VIDEO)
+            # Add any callback functionality to this class.
             self.ads.set_rewarded_ad_listener(RewardedListenerInterface())
             return Button(text='Show Rewarded Ad',
                           on_release=lambda a:self.ads.show_rewarded_ad())
                         
         def on_resume(self):
-            self.ads.request_interstitial()
+            self.ads.load_rewarded_ad(TestIds.REWARDED_VIDEO)
 
     if __name__ == "__main__":
         RewardedVideoTest().run()

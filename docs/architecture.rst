@@ -1,3 +1,12 @@
-KivMob Architecture
+Architecture
 ====================
+
+.. image:: kivmob-arch.png
+    :align: center
+
+KivMob leverages the bridge design pattern to handle platform-specific instantiation. This allows
+developers to import the module without breaking affecting non-mobile platforms. The Android and iOS
+implementations should both fufill the AdMobBridge interface. 
+
+
 
