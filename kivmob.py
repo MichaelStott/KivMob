@@ -105,7 +105,7 @@ else:
 
 class TestIds:
     """ Enum of test ad ids provided by AdMob. This allows developers to
-        test displaying ad without setting up an AdMob account.
+        test displaying ads without setting up an AdMob account.
     """
 
     """ Test AdMob App ID """
