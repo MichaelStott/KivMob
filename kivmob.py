@@ -1,9 +1,8 @@
+import kivy
 from kivy.utils import platform
 from kivy.logger import Logger
 from kivy.lang import Builder
-from kivy.uix.relativelayout import RelativeLayout
-from kivy.uix.button import Button
-from kivy.uix.modalview import ModalView
+from kivy.core.window import Window
 
 
 if platform == "android":
@@ -464,7 +463,17 @@ class KivMob:
         Logger.info("KivMob: show_rewarded_ad() called.")
         self.bridge.show_rewarded_ad()
 
-
+    def determine_banner_height(self):
+        """ Utility function for determining the height (dp) of the banner ad
+        """
+        height = 32
+        upper_bound = kivy.metrics.dp(720)
+        if Window.height > upper_bound:
+            height = 90
+        elif Window.height > kivy.metrics.dp(400) and Window.height <= upper_bound:
+            height = 50
+        return height
+        
 if __name__ == "__main__":
     print(
         "\033[92m  _  ___       __  __       _\n"
