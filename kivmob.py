@@ -464,7 +464,9 @@ class KivMob:
         self.bridge.show_rewarded_ad()
 
     def determine_banner_height(self):
-        """ Utility function for determining the height (dp) of the banner ad
+        """ Utility function for determining the height (dp) of the banner ad.
+
+            :return height: Height of banner ad in dp.
         """
         height = 32
         upper_bound = kivy.metrics.dp(720)
