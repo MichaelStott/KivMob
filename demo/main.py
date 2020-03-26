@@ -1,7 +1,7 @@
 from kivmob import KivMob, TestIds, RewardedListenerInterface
 
 import kivy.utils
-from kivy.app import App
+from kivymd.app import MDApp
 from kivy.lang import Builder
 from kivy.config import Config
 from kivy.utils import platform
@@ -17,31 +17,28 @@ if platform not in ("android", "ios"):
 
 __version__ = "1.0"
 
-from kivymd.label import MDLabel
 from kivymd.theming import ThemeManager
-from kivymd.list import ILeftBody
-from kivymd.label import MDLabel
-from kivymd.snackbar import Snackbar
+from kivymd.uix.list import ILeftBody
+from kivymd.uix.list import OneLineListItem
+from kivymd.uix.list import TwoLineListItem
+from kivymd.uix.list import ThreeLineListItem
+from kivymd.uix.snackbar import Snackbar
 
 Builder.load_string(
     """
 #:import kivy kivy
-
-#:import Toolbar kivymd.toolbar.Toolbar
-#:import MDCard kivymd.card.MDCard
-#:import MDList kivymd.list.MDList
-#:import MDSeparator kivymd.card.MDSeparator
-#:import MDSpinner kivymd.spinner.MDSpinner
-#:import OneLineListItem kivymd.list.OneLineListItem
-#:import TwoLineListItem kivymd.list.TwoLineListItem
-#:import ThreeLineListItem kivymd.list.ThreeLineListItem
+#.import Snackbar kivymd.uix.snackbar.Snackbar
+#:import MDList kivymd.uix.list.MDList
+#:import OneLineListItem kivymd.uix.list.OneLineListItem
+#:import TwoLineListItem kivymd.uix.list.TwoLineListItem
+#:import ThreeLineListItem kivymd.uix.list.ThreeLineListItem
 
 #:import webbrowser webbrowser
 
 <KivMobDemoUI>:
     BoxLayout:
         orientation: 'vertical'
-        Toolbar:
+        MDToolbar:
             id: toolbar
             title: 'KivMob 2.0'
             md_bg_color: app.theme_cls.primary_color
@@ -77,6 +74,7 @@ Builder.load_string(
                             type: "three-line"
                             text: "Documentation"
                             secondary_text: "Learn how to utilize KivMob within a mobile Kivy application."
+                            on_press: webbrowser.open("https://github.com/MichaelStott/KivMob")
                             AvatarIconWidget:
                                 source: './assets/documentation.png'
                         ThreeLineAvatarListItem:
@@ -90,6 +88,7 @@ Builder.load_string(
                             type: "three-line"
                             text: "About"
                             secondary_text: "Software licensing, credits, and other KivMob information."
+                            on_press: webbrowser.open("https://github.com/MichaelStott/KivMob")
                             AvatarIconWidget:
                                 source: './assets/about.png'
             Screen:
@@ -115,7 +114,7 @@ Builder.load_string(
                 name: 'rewarded'
                 BoxLayout:
                     MDLabel:
-                        font_style: 'Headline'
+                        font_style: 'H1'
                         theme_text_color: 'Primary'
                         text: "Counter: 0"
                         halign: 'center'
@@ -161,10 +160,12 @@ class KivMobDemoUI(FloatLayout):
         pass
 
 
-class KivMobDemo(App):
+class KivMobDemo(MDApp):
 
-    theme_cls = ThemeManager()
-
+    def __init__(self,**kwargs):
+        self.theme_cls.theme_style = "Dark"
+        super().__init__(**kwargs)
+  
     show_banner = False
 
     def build(self):
