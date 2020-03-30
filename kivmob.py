@@ -14,7 +14,9 @@ if platform == "android":
         AdListener = autoclass("com.google.android.gms.ads.AdListener")
         AdMobAdapter = autoclass("com.google.ads.mediation.admob.AdMobAdapter")
         AdRequest = autoclass("com.google.android.gms.ads.AdRequest")
-        AdRequestBuilder = autoclass("com.google.android.gms.ads.AdRequest$Builder")
+        AdRequestBuilder = autoclass(
+            "com.google.android.gms.ads.AdRequest$Builder"
+        )
         AdSize = autoclass("com.google.android.gms.ads.AdSize")
         AdView = autoclass("com.google.android.gms.ads.AdView")
         Bundle = autoclass("android.os.Bundle")
@@ -24,7 +26,9 @@ if platform == "android":
         LinearLayout = autoclass("android.widget.LinearLayout")
         MobileAds = autoclass("com.google.android.gms.ads.MobileAds")
         RewardItem = autoclass("com.google.android.gms.ads.reward.RewardItem")
-        RewardedVideoAd = autoclass("com.google.android.gms.ads.reward.RewardedVideoAd")
+        RewardedVideoAd = autoclass(
+            "com.google.android.gms.ads.reward.RewardedVideoAd"
+        )
         RewardedVideoAdListener = autoclass(
             "com.google.android.gms.ads.reward.RewardedVideoAdListener"
         )
@@ -43,11 +47,15 @@ if platform == "android":
             @java_method("(Lcom/google/android/gms/ads/reward/RewardItem;)V")
             def onRewarded(self, reward):
                 Logger.info("KivMob: onRewarded() called.")
-                self._listener.on_rewarded(reward.getType(), reward.getAmount())
+                self._listener.on_rewarded(
+                    reward.getType(), reward.getAmount()
+                )
 
             @java_method("()V")
             def onRewardedVideoAdLeftApplication(self):
-                Logger.info("KivMob: onRewardedVideoAdLeftApplicaxtion() called.")
+                Logger.info(
+                    "KivMob: onRewardedVideoAdLeftApplicaxtion() called."
+                )
                 self._listener.on_rewarded_video_ad_left_application()
 
             @java_method("()V")
@@ -82,7 +90,9 @@ if platform == "android":
                 self._listener.on_rewarded_video_ad_completed()
 
     except BaseException:
-        Logger.error("KivMob: Cannot load AdMob classes. Check buildozer.spec.")
+        Logger.error(
+            "KivMob: Cannot load AdMob classes. Check buildozer.spec."
+        )
 else:
 
     class AdMobRewardedVideoAdListener:
@@ -222,7 +232,9 @@ class AndroidBridge(AdMobBridge):
         MobileAds.initialize(activity.mActivity, appID)
         self._adview = AdView(activity.mActivity)
         self._interstitial = InterstitialAd(activity.mActivity)
-        self._rewarded = MobileAds.getRewardedVideoAdInstance(activity.mActivity)
+        self._rewarded = MobileAds.getRewardedVideoAdInstance(
+            activity.mActivity
+        )
         self._test_devices = []
 
     @run_on_ui_thread
@@ -316,7 +328,9 @@ class AndroidBridge(AdMobBridge):
                 builder.tagForChildDirectedTreatment(options["children"])
             if "family" in options:
                 extras = Bundle()
-                extras.putBoolean("is_designed_for_families", options["family"])
+                extras.putBoolean(
+                    "is_designed_for_families", options["family"]
+                )
                 builder.addNetworkExtrasBundle(AdMobAdapter, extras)
         for test_device in self._test_devices:
             builder.addTestDevice(test_device)
@@ -458,7 +472,10 @@ class KivMob:
         upper_bound = kivy.metrics.dp(720)
         if Window.height > upper_bound:
             height = 90
-        elif Window.height > kivy.metrics.dp(400) and Window.height <= upper_bound:
+        elif (
+            Window.height > kivy.metrics.dp(400)
+            and Window.height <= upper_bound
+        ):
             height = 50
         return height
 
