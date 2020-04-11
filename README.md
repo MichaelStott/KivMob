@@ -13,6 +13,7 @@
   <a><img alt="Discord" src="https://img.shields.io/discord/698610163254558804"></a>
 </p>
 
+![Discord](https://img.shields.io/discord/698610163254558804)
 Allows developers to monetize their [Kivy] mobile applications using [Google AdMob].
 
   - No need to change internal Android project manifest templates or Java code.
