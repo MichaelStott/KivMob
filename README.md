@@ -89,7 +89,7 @@ $ buildozer android debug deploy run
 
 ### App Showcase
 
-_Please open a pull request or project issue if you would like your KivMob app featured in this README and the documentation._
+_Please open a pull request or project issue if you would like your KivMob app featured in this README._
 
 <!-- List alphabetically please.  -->
 | App | Play Store Link | Author |
