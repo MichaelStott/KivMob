@@ -7,7 +7,7 @@ setup(
     url="http://github.com/MichaelStott/KivMob",
     author="Michael Stott",
     license="MIT",
-    py_modules=["kivmob"],
+    py_modules=["android", "bridge", "desktop", "ios", "kivmob"],
     install_requires=["kivy"],
     zip_safe=False,
 )

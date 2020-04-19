@@ -6,7 +6,7 @@ python:
 install:
 - pip install pycodestyle
 script:
-- pycodestyle kivmob.py
+- pycodestyle *.py
 deploy:
   skip_existing: true
   provider: pypi
