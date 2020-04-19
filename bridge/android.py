@@ -83,7 +83,7 @@ try:
 except BaseException:
     Logger.error("KivMob: Cannot load AdMob classes. Check buildozer.spec.")
 
-from bridge import AdMobBridge
+from bridge.bridge import AdMobBridge
 
 
 class AndroidBridge(AdMobBridge):

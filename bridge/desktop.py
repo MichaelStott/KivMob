@@ -1,4 +1,4 @@
-from bridge import AdMobBridge
+from bridge.bridge import AdMobBridge
 
 
 class DesktopBridge(AdMobBridge):

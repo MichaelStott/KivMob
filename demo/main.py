@@ -161,11 +161,10 @@ class KivMobDemoUI(FloatLayout):
 
 
 class KivMobDemo(MDApp):
-
-    def __init__(self,**kwargs):
+    def __init__(self, **kwargs):
         self.theme_cls.theme_style = "Dark"
         super().__init__(**kwargs)
-  
+
     show_banner = False
 
     def build(self):

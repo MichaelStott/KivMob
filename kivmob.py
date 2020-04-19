@@ -90,7 +90,7 @@ class KivMob:
         self._banner_top_pos = True
         if platform == "android":
             Logger.info("KivMob: Android platform detected.")
-            from android import AndroidBridge
+            from bridge.android import AndroidBridge
 
             self.bridge = AndroidBridge(app_id)
         elif platform == "ios":
@@ -100,7 +100,7 @@ class KivMob:
             Logger.info(
                 "KivMob: Desktop platform detected. Ads will not be shown."
             )
-            from desktop import DesktopBridge
+            from bridge.desktop import DesktopBridge
 
             self.bridge = DesktopBridge(app_id)
 
