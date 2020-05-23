@@ -360,7 +360,7 @@ class KivMob:
             self.bridge = AdMobBridge(appID)
 
     def add_test_device(self, device):
-        """ Add test device ID, which will tigger test ads to be displayed on
+        """ Add test device ID, which will trigger test ads to be displayed on
             that device
 
             :type device: string
