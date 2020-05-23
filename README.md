@@ -97,7 +97,7 @@ _Please open a pull request or project issue if you would like your KivMob app f
 | Gloworld : The Marbles game | https://play.google.com/store/apps/details?id=com.worldglowfree.dom.com.world.glowfree&hl=en | [thegameguy] |
 | MIUI Hidden Settings | https://play.google.com/store/apps/details?id=com.ceyhan.sets | [Yunus Ceyhan] |
 | PyTool USB Serial Free |  https://play.google.com/store/apps/details?id=com.quanlin.pytoolusbserialfree | [Quan Lin] |
-| App: Easy Weather - Live Weather with 5 day forecast |  https://play.google.com/store/apps/details?id=org.sivaram.easyweather | [Sivaram Yadav Nalliboyana]
+| Easy Weather - Live Weather with 5 day forecast |  https://play.google.com/store/apps/details?id=org.sivaram.easyweather | [Sivaram Yadav Nalliboyana]
 
 ### Other 
 
