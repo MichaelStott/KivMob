@@ -9,6 +9,7 @@ from kivy.core.window import Window
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import ScreenManager
 from kivy.uix.image import Image
+from kivy.properties import NumericProperty
 
 if platform not in ("android", "ios"):
     # Approximate dimensions of mobile phone.
@@ -25,7 +26,7 @@ from kivymd.uix.list import ThreeLineListItem
 from kivymd.uix.snackbar import Snackbar
 
 Builder.load_string(
-    """
+"""
 #:import kivy kivy
 #.import Snackbar kivymd.uix.snackbar.Snackbar
 #:import MDList kivymd.uix.list.MDList
@@ -74,7 +75,7 @@ Builder.load_string(
                             type: "three-line"
                             text: "Documentation"
                             secondary_text: "Learn how to utilize KivMob within a mobile Kivy application."
-                            on_press: webbrowser.open("https://github.com/MichaelStott/KivMob")
+                            on_press: webbrowser.open("https://kivmob.com")
                             AvatarIconWidget:
                                 source: './assets/documentation.png'
                         ThreeLineAvatarListItem:
@@ -116,7 +117,7 @@ Builder.load_string(
                     MDLabel:
                         font_style: 'H1'
                         theme_text_color: 'Primary'
-                        text: "Counter: 0"
+                        text: "Points: "+str(app.Points)
                         halign: 'center'
                         pos_hint: {'center_x': 0.5, 'center_y': 0.75}
                 MDFloatingActionButton:
@@ -127,10 +128,8 @@ Builder.load_string(
 """
 )
 
-
 class AvatarIconWidget(ILeftBody, Image):
     pass
-
 
 class KivMobDemoUI(FloatLayout):
     def switch_to_screen(self, name, title):
@@ -159,13 +158,14 @@ class KivMobDemoUI(FloatLayout):
     def open_dialog(self):
         pass
 
-
 class KivMobDemo(MDApp):
 
     def __init__(self,**kwargs):
         self.theme_cls.theme_style = "Dark"
         super().__init__(**kwargs)
-  
+        self.rewards = Rewards_Handler(self)
+
+    Points = NumericProperty(0)
     show_banner = False
 
     def build(self):
@@ -174,7 +174,7 @@ class KivMobDemo(MDApp):
         self.ads.new_interstitial(TestIds.INTERSTITIAL)
         self.ads.request_banner()
         self.ads.request_interstitial()
-        self.ads.set_rewarded_ad_listener(RewardedListenerInterface())
+        self.ads.set_rewarded_ad_listener(self.rewards)
         self.ads.load_rewarded_ad(TestIds.REWARDED_VIDEO)
         self.toggled = False
         return KivMobDemoUI()
@@ -186,6 +186,30 @@ class KivMobDemo(MDApp):
         else:
             self.ads.hide_banner()
 
+    def load_video(self):
+        self.ads.load_rewarded_ad(TestIds.REWARDED_VIDEO)
+
+class Rewards_Handler(RewardedListenerInterface):
+
+    def __init__(self,other):
+        self.AppObj = other
+
+    Reward = "None"
+    Reward_Amount = "None"
+
+    def on_rewarded(self, reward_name, reward_amount):
+        self.Reward = reward_name
+        self.Reward_Amount = reward_amount
+        self.AppObj.Points += int(reward_amount)
+
+    def on_rewarded_video_ad_completed(self):
+        self.on_rewarded(self.Reward,self.Reward_Amount)
+
+    def on_rewarded_video_ad_started(self):
+        self.AppObj.load_video()
+
+    def on_rewarded_video_ad_left_application(self):
+        self.AppObj.Points += 0
 
 if __name__ == "__main__":
     KivMobDemo().run()
