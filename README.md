@@ -92,7 +92,7 @@ $ buildozer android debug deploy run
 _Please open a pull request or project issue if you would like your KivMob app featured in this README._
 
 <!-- List alphabetically please.  -->
-| App | Play Store Link | Author |
+| App | Play Store Link | Developer |
 | ------ | ------ | ------ |
 | Gloworld : The Marbles game | https://play.google.com/store/apps/details?id=com.worldglowfree.dom.com.world.glowfree&hl=en | [thegameguy] |
 | MIUI Hidden Settings | https://play.google.com/store/apps/details?id=com.ceyhan.sets | [Yunus Ceyhan] |
