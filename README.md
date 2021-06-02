@@ -72,7 +72,7 @@ Make the following modifications to your buildozer.spec file.
 requirements = kivy, android, jnius, kivmob
 ...
 android.permissions = INTERNET, ACCESS_NETWORK_STATE
-android.api = 27
+android.api = 30
 android.minapi = 21
 android.sdk = 24
 android.ndk = 19b
