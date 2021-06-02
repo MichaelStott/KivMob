@@ -92,11 +92,13 @@ $ buildozer android debug deploy run
 _Please open a pull request or project issue if you would like your KivMob app featured in this README._
 
 <!-- List alphabetically please.  -->
-| App | Play Store Link | Author |
+| App | Play Store Link | Developer |
 | ------ | ------ | ------ |
 | Gloworld : The Marbles game | https://play.google.com/store/apps/details?id=com.worldglowfree.dom.com.world.glowfree&hl=en | [thegameguy] |
 | MIUI Hidden Settings | https://play.google.com/store/apps/details?id=com.ceyhan.sets | [Yunus Ceyhan] |
 | PyTool USB Serial Free |  https://play.google.com/store/apps/details?id=com.quanlin.pytoolusbserialfree | [Quan Lin] |
+| Easy Weather - Live Weather with 5 day forecast |  https://play.google.com/store/apps/details?id=org.sivaram.easyweather | [Sivaram Yadav Nalliboyana]
+| La Carta | https://play.google.com/store/apps/details?id=com.blogspot.roberware.lacarta | [RoberWare]
 
 ### Other 
 
@@ -112,4 +114,5 @@ KivMob is an open source project not associated with AdMob. Please abide by thei
 [Quan Lin]: <https://github.com/jacklinquan>
 [thegameguy]: <https://github.com/thegameguy>
 [Yunus Ceyhan]: <https://github.com/yunus-ceyhan>
-
+[Sivaram Yadav Nalliboyana]: <https://github.com/GrandmasterSivaram>
+[RoberWare]: <https://github.com/RoberWare>

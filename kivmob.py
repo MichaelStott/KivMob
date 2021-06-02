@@ -1,8 +1,7 @@
-import kivy
-from kivy.utils import platform
-from kivy.logger import Logger
-from kivy.lang import Builder
 from kivy.core.window import Window
+from kivy.logger import Logger
+from kivy.metrics import dp
+from kivy.utils import platform
 
 
 if platform == "android":
@@ -360,7 +359,7 @@ class KivMob:
             self.bridge = AdMobBridge(appID)
 
     def add_test_device(self, device):
-        """ Add test device ID, which will tigger test ads to be displayed on
+        """ Add test device ID, which will trigger test ads to be displayed on
             that device
 
             :type device: string
@@ -468,15 +467,12 @@ class KivMob:
 
             :return height: Height of banner ad in dp.
         """
-        height = 32
-        upper_bound = kivy.metrics.dp(720)
+        height = dp(32)
+        upper_bound = dp(720)
         if Window.height > upper_bound:
-            height = 90
-        elif (
-            Window.height > kivy.metrics.dp(400)
-            and Window.height <= upper_bound
-        ):
-            height = 50
+            height = dp(90)
+        elif dp(400) < Window.height <= upper_bound:
+            height = dp(50)
         return height
 
 
