@@ -258,7 +258,7 @@ class AndroidBridge(AdMobBridge):
             LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT
         )
         layout.setLayoutParams(layoutParams)
-        activity.addContentView(layout, layoutParams)
+        activity.mActivity.addContentView(layout, layoutParams)
 
     @run_on_ui_thread
     def request_banner(self, options={}):
