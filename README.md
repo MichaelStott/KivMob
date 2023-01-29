@@ -69,16 +69,17 @@ KivMobTest().run()
 Make the following modifications to your buildozer.spec file.
 
 ```
-requirements = kivy, android, jnius, kivmob
+requirements = python3, kivy, android, jnius, kivmob
 ...
 android.permissions = INTERNET, ACCESS_NETWORK_STATE
-android.api = 30
+android.api = 33
 android.minapi = 21
-android.sdk = 24
-android.ndk = 19b
-android.gradle_dependencies = 'com.google.firebase:firebase-ads:10.2.0'
+android.sdk = 33
+android.ndk = 25b
+android.gradle_dependencies = 'com.google.firebase:firebase-ads:21.4.0'
+android.enable_androidx = True
 p4a.branch = master
-android.meta_data = com.google.android.gms.ads.APPLICATION_ID=ca-app-pub-3940256099942544~3347511713
+android.meta_data = 'com.google.android.gms.ads.APPLICATION_ID = ca-app-pub-3940256099942544~3347511713'
 ```
 
 Finally, build and launch the application.
