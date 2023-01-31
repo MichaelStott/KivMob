@@ -26,7 +26,7 @@ For more information, please read the official [documentation].
 
 You can install KivMob with the following command.
 ```sh
-$ pip3 install kivmob
+$ pip3 install https://github.com/MichaelStott/KivMob/archive/refs/heads/master.zip
 ```
 
 ### Demo Screenshot
@@ -69,17 +69,17 @@ KivMobTest().run()
 Make the following modifications to your buildozer.spec file.
 
 ```
-requirements = python3, kivy, android, jnius, kivmob
+requirements = python3, kivy, android, jnius, https://github.com/MichaelStott/KivMob/archive/refs/heads/master.zip
 ...
 android.permissions = INTERNET, ACCESS_NETWORK_STATE
 android.api = 33
 android.minapi = 21
 android.sdk = 33
 android.ndk = 25b
-android.gradle_dependencies = 'com.google.firebase:firebase-ads:21.4.0'
+android.gradle_dependencies = com.google.firebase:firebase-ads:21.4.0
 android.enable_androidx = True
 p4a.branch = master
-android.meta_data = 'com.google.android.gms.ads.APPLICATION_ID = ca-app-pub-3940256099942544~3347511713'
+android.meta_data = com.google.android.gms.ads.APPLICATION_ID=ca-app-pub-3940256099942544~3347511713
 ```
 
 Finally, build and launch the application.
