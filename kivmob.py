@@ -10,29 +10,24 @@ if platform == "android":
         from android.runnable import run_on_ui_thread
 
         activity = autoclass("org.kivy.android.PythonActivity")
-        AdListener = autoclass("com.google.android.gms.ads.AdListener")
-        AdMobAdapter = autoclass("com.google.ads.mediation.admob.AdMobAdapter")
-        AdRequest = autoclass("com.google.android.gms.ads.AdRequest")
-        AdRequestBuilder = autoclass(
-            "com.google.android.gms.ads.AdRequest$Builder"
-        )
-        AdSize = autoclass("com.google.android.gms.ads.AdSize")
-        AdView = autoclass("com.google.android.gms.ads.AdView")
-        Bundle = autoclass("android.os.Bundle")
-        Gravity = autoclass("android.view.Gravity")
-        InterstitialAd = autoclass("com.google.android.gms.ads.InterstitialAd")
-        LayoutParams = autoclass("android.view.ViewGroup$LayoutParams")
-        LinearLayout = autoclass("android.widget.LinearLayout")
-        MobileAds = autoclass("com.google.android.gms.ads.MobileAds")
-        RewardItem = autoclass("com.google.android.gms.ads.reward.RewardItem")
-        RewardedVideoAd = autoclass(
-            "com.google.android.gms.ads.reward.RewardedVideoAd"
-        )
-        RewardedVideoAdListener = autoclass(
-            "com.google.android.gms.ads.reward.RewardedVideoAdListener"
-        )
-        View = autoclass("android.view.View")
+        AdListener = autoclass('com.google.android.gms.ads.AdListener')
+        AdMobAdapter = autoclass('com.google.ads.mediation.admob.AdMobAdapter')
+        AdRequest = autoclass('com.google.android.gms.ads.AdRequest')
+        AdRequestBuilder = autoclass('com.google.android.gms.ads.AdRequest$Builder')
+        AdSize = autoclass('com.google.android.gms.ads.AdSize')
+        AdView = autoclass('com.google.android.gms.ads.AdView')
+        Bundle = autoclass('android.os.Bundle')
+        Gravity = autoclass('android.view.Gravity')
+        InterstitialAd = autoclass('com.google.android.gms.ads.interstitial.InterstitialAd')
+        LayoutParams = autoclass('android.view.ViewGroup$LayoutParams')
+        LinearLayout = autoclass('android.widget.LinearLayout')
+        MobileAds = autoclass('com.google.android.gms.ads.MobileAds')
+        RewardItem = autoclass('com.google.android.gms.ads.rewarded.RewardItem')
+        #RewardedVideoAd = autoclass('com.google.android.gms.ads.rewarded.RewardedVideoAd')
+        #RewardedVideoAdListener = autoclass('com.google.android.gms.ads.rewarded.RewardedVideoAdListener')
+        View = autoclass('android.view.View')
 
+        ''' TODO since no more RewardedVideoAd
         class AdMobRewardedVideoAdListener(PythonJavaClass):
 
             __javainterfaces__ = (
@@ -87,6 +82,7 @@ if platform == "android":
             def onRewardedVideoCompleted(self):
                 Logger.info("KivMob: onRewardedVideoCompleted() called.")
                 self._listener.on_rewarded_video_ad_completed()
+        '''
 
     except BaseException:
         Logger.error(
@@ -94,8 +90,10 @@ if platform == "android":
         )
 else:
 
+    '''
     class AdMobRewardedVideoAdListener:
         pass
+    '''
 
     def run_on_ui_thread(x):
         pass
