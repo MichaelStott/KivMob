@@ -319,8 +319,11 @@ class AndroidBridge(AdMobBridge):
                     "is_designed_for_families", options["family"]
                 )
                 builder.addNetworkExtrasBundle(AdMobAdapter, extras)
+        
         for test_device in self._test_devices:
-            builder.addTestDevice(test_device)
+            if len(self._test_devices) != 0:
+                builder.addTestDevice(test_device)
+                
         return builder
 
 
