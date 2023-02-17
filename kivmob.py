@@ -216,7 +216,13 @@ class AndroidBridge(AdMobBridge):
     @run_on_ui_thread
     def __init__(self, appID):
         self._loaded = False
-        MobileAds.initialize(activity.mActivity, appID)
+
+        try:
+            MobileAds.initialize(activity.mActivity, appID)
+
+        except ValueError as error:
+            print(error)
+            
         self._adview = AdView(activity.mActivity)
         self._interstitial = InterstitialAd(activity.mActivity)
         self._rewarded = MobileAds.getRewardedVideoAdInstance(
