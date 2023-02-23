@@ -13,80 +13,66 @@ if platform == "android":
         AdListener = autoclass("com.google.android.gms.ads.AdListener")
         AdMobAdapter = autoclass("com.google.ads.mediation.admob.AdMobAdapter")
         AdRequest = autoclass("com.google.android.gms.ads.AdRequest")
-        AdRequestBuilder = autoclass(
-            "com.google.android.gms.ads.AdRequest$Builder"
-        )
+        AdRequestBuilder = autoclass("com.google.android.gms.ads.AdRequest$Builder")
         AdSize = autoclass("com.google.android.gms.ads.AdSize")
         AdView = autoclass("com.google.android.gms.ads.AdView")
         Bundle = autoclass("android.os.Bundle")
         Gravity = autoclass("android.view.Gravity")
-        InterstitialAd = autoclass("com.google.android.gms.ads.InterstitialAd")
+        InterstitialAd = autoclass("com.google.android.gms.ads.interstitial.InterstitialAd")
         LayoutParams = autoclass("android.view.ViewGroup$LayoutParams")
         LinearLayout = autoclass("android.widget.LinearLayout")
         MobileAds = autoclass("com.google.android.gms.ads.MobileAds")
-        RewardItem = autoclass("com.google.android.gms.ads.reward.RewardItem")
-        RewardedVideoAd = autoclass(
-            "com.google.android.gms.ads.reward.RewardedVideoAd"
-        )
-        RewardedVideoAdListener = autoclass(
-            "com.google.android.gms.ads.reward.RewardedVideoAdListener"
-        )
+        RewardItem = autoclass("com.google.android.gms.ads.rewarded.RewardItem")
+        #RewardedVideoAd = autoclass("com.google.android.gms.ads.rewarded.RewardedVideoAd")
+        #RewardedVideoAdListener = autoclass("com.google.android.gms.ads.rewarded.RewardedVideoAdListener")
         View = autoclass("android.view.View")
 
+        """ TODO since no more RewardedVideoAd
         class AdMobRewardedVideoAdListener(PythonJavaClass):
-
             __javainterfaces__ = (
                 "com.google.android.gms.ads.reward.RewardedVideoAdListener",
             )
             __javacontext__ = "app"
-
             def __init__(self, listener):
                 self._listener = listener
-
             @java_method("(Lcom/google/android/gms/ads/reward/RewardItem;)V")
             def onRewarded(self, reward):
                 Logger.info("KivMob: onRewarded() called.")
                 self._listener.on_rewarded(
                     reward.getType(), reward.getAmount()
                 )
-
             @java_method("()V")
             def onRewardedVideoAdLeftApplication(self):
                 Logger.info(
                     "KivMob: onRewardedVideoAdLeftApplicaxtion() called."
                 )
                 self._listener.on_rewarded_video_ad_left_application()
-
             @java_method("()V")
             def onRewardedVideoAdClosed(self):
                 Logger.info("KivMob: onRewardedVideoAdClosed() called.")
                 self._listener.on_rewarded_video_ad_closed()
-
             @java_method("(I)V")
             def onRewardedVideoAdFailedToLoad(self, errorCode):
                 Logger.info("KivMob: onRewardedVideoAdFailedToLoad() called.")
-                # Logger.info('KivMob: ErrorCode ' + str(errorCode))
+                # Logger.info("KivMob: ErrorCode " + str(errorCode))
                 self._listener.on_rewarded_video_ad_failed_to_load(errorCode)
-
             @java_method("()V")
             def onRewardedVideoAdLoaded(self):
                 Logger.info("KivMob: onRewardedVideoAdLoaded() called.")
                 self._listener.on_rewarded_video_ad_loaded()
-
             @java_method("()V")
             def onRewardedVideoAdOpened(self):
                 Logger.info("KivMob: onRewardedVideoAdOpened() called.")
                 self._listener.on_rewarded_video_ad_opened()
-
             @java_method("()V")
             def onRewardedVideoStarted(self):
                 Logger.info("KivMob: onRewardedVideoStarted() called.")
                 self._listener.on_rewarded_video_ad_started()
-
             @java_method("()V")
             def onRewardedVideoCompleted(self):
                 Logger.info("KivMob: onRewardedVideoCompleted() called.")
                 self._listener.on_rewarded_video_ad_completed()
+        """
 
     except BaseException:
         Logger.error(
@@ -94,8 +80,10 @@ if platform == "android":
         )
 else:
 
+    """
     class AdMobRewardedVideoAdListener:
         pass
+    """
 
     def run_on_ui_thread(x):
         pass
@@ -228,7 +216,13 @@ class AndroidBridge(AdMobBridge):
     @run_on_ui_thread
     def __init__(self, appID):
         self._loaded = False
-        MobileAds.initialize(activity.mActivity, appID)
+
+        try:
+            MobileAds.initialize(activity.mActivity, appID)
+
+        except ValueError as error:
+            print(error)
+            
         self._adview = AdView(activity.mActivity)
         self._interstitial = InterstitialAd(activity.mActivity)
         self._rewarded = MobileAds.getRewardedVideoAdInstance(
@@ -331,8 +325,11 @@ class AndroidBridge(AdMobBridge):
                     "is_designed_for_families", options["family"]
                 )
                 builder.addNetworkExtrasBundle(AdMobAdapter, extras)
+        
         for test_device in self._test_devices:
-            builder.addTestDevice(test_device)
+            if len(self._test_devices) != 0:
+                builder.addTestDevice(test_device)
+                
         return builder
 
 
