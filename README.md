@@ -71,7 +71,7 @@ Make the following modifications to your buildozer.spec file.
 ```
 requirements = python3, kivy, android, jnius, https://github.com/MichaelStott/KivMob/archive/refs/heads/master.zip
 ...
-android.permissions = INTERNET, ACCESS_NETWORK_STATE
+android.permissions = INTERNET, ACCESS_NETWORK_STATE,com.google.android.gms.permission.AD_ID
 android.api = 33
 android.minapi = 21
 android.sdk = 33
