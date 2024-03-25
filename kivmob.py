@@ -213,6 +213,7 @@ class RewardedListenerInterface:
 
 
 class AndroidBridge(AdMobBridge):
+    _test_devices = []
     @run_on_ui_thread
     def __init__(self, appID):
         self._loaded = False
@@ -228,7 +229,6 @@ class AndroidBridge(AdMobBridge):
         self._rewarded = MobileAds.getRewardedVideoAdInstance(
             activity.mActivity
         )
-        self._test_devices = []
 
     @run_on_ui_thread
     def add_test_device(self, testID):
