@@ -1,13 +1,14 @@
 [app]
 
 # (str) Title of your application
-title = KivMob
-
+title = My Jarrock
+android.gradle_options = "--multi-dex"
+#bu yoktu ekledim lan , nolcak acb
 # (str) Package name
-package.name = kivmob
+package.name = rockk
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = org.kivmob
+package.domain = org.jarrr
 
 # (str) Source code where the main.py live
 source.dir = .
@@ -37,7 +38,7 @@ version = 0.1
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3, kivy, jnius, android, https://github.com/MichaelStott/KivMob/archive/refs/heads/master.zip
+requirements = python3,kivy,android,pyjnius
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
@@ -49,7 +50,8 @@ requirements = python3, kivy, jnius, android, https://github.com/MichaelStott/Ki
 # (str) Icon of the application
 #icon.filename = %(source.dir)s/data/icon.png
 
-# (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
+# (list) Supported orientations
+# Valid options are: landscape, portrait, portrait-reverse or landscape-reverse
 orientation = portrait
 
 # (list) List of service to declare
@@ -63,10 +65,10 @@ orientation = portrait
 # author = © Copyright Info
 
 # change the major version of python used by the app
-#osx.python_version = 3
+osx.python_version = 3
 
 # Kivy version to use
-#osx.kivy_version = 1.9.1
+osx.kivy_version = 1.9.1
 
 #
 # Android specific
@@ -93,22 +95,23 @@ fullscreen = 0
 #icon.adaptive_background.filename = %(source.dir)s/data/icon_bg.png
 
 # (list) Permissions
-android.permissions = INTERNET, ACCESS_NETWORK_STATE
+# (See https://python-for-android.readthedocs.io/en/latest/buildoptions/#build-options-1 for all the supported syntaxes and properties)
+android.permissions = INTERNET, ACCESS_NETWORK_STATE 
 
 # (list) features (adds uses-feature -tags to manifest)
 #android.features = android.hardware.usb.host
 
 # (int) Target Android API, should be as high as possible.
-android.api = 33
+android.api = 35
 
 # (int) Minimum API your APK / AAB will support.
-android.minapi = 21
+android.minapi = 23
 
 # (int) Android SDK version to use
-android.sdk = 33
+#android.sdk = 20
 
 # (str) Android NDK version to use
-android.ndk = 25b
+#android.ndk = 23b
 
 # (int) Android NDK API to use. This is the minimum API your app will support, it should usually match android.minapi.
 #android.ndk_api = 21
@@ -134,7 +137,7 @@ android.ndk = 25b
 # agreements. This is intended for automation only. If set to False,
 # the default, you will be shown the license when first running
 # buildozer.
-android.accept_sdk_license = True
+# android.accept_sdk_license = False
 
 # (str) Android entry point, default is ok for Kivy-based app
 #android.entrypoint = org.kivy.android.PythonActivity
@@ -152,7 +155,7 @@ android.accept_sdk_license = True
 #android.extra_manifest_application_arguments = ./src/android/extra_manifest_application_arguments.xml
 
 # (str) Full name including package path of the Java class that implements Python Service
-# use that parameter to set custom Java class instead of PythonService
+# use that parameter to set custom Java class which extends PythonService
 #android.service_class_name = org.kivy.android.PythonService
 
 # (str) Android app theme, default is ok for Kivy-based app
@@ -175,7 +178,7 @@ android.accept_sdk_license = True
 
 # (list) List of Java files to add to the android project (can be java or a
 # directory containing the files)
-#android.add_src =
+android.add_src = java_src
 
 # (list) Android AAR archives to add
 #android.add_aars =
@@ -186,9 +189,30 @@ android.accept_sdk_license = True
 # 2) android.add_assets = source_asset_path:destination_asset_relative_path
 #android.add_assets =
 
-# (list) Gradle dependencies to add
-android.gradle_dependencies = com.google.firebase:firebase-ads:21.4.0
+# (list) Put these files or directories in the apk res directory.
+# The option may be used in three ways, the value may contain one or zero ':'
+# Some examples:
+# 1) A file to add to resources, legal resource names contain ['a-z','0-9','_']
+# android.add_resources = my_icons/all-inclusive.png:drawable/all_inclusive.png
+# 2) A directory, here  'legal_icons' must contain resources of one kind
+# android.add_resources = legal_icons:drawable
+# 3) A directory, here 'legal_resources' must contain one or more directories, 
+# each of a resource kind:  drawable, xml, etc...
+# android.add_resources = legal_resources
+#android.add_resources =
 
+# (list) Gradle dependencies to add
+
+
+
+
+android.gradle_dependencies = com.google.android.gms:play-services-ads:25.2.0
+
+
+
+
+#android.gradle_dependencies = "com.google.android.gms:play-services-ads:22.6.0"
+#android.gradle_dependencies = 'com.google.android.gms:play-services-ads:22.6.0'
 # (bool) Enable AndroidX support. Enable when 'android.gradle_dependencies'
 # contains an 'androidx' package, or any package from Kotlin source.
 # android.enable_androidx requires android.api >= 28
@@ -224,8 +248,15 @@ android.enable_androidx = True
 # (str) XML file to include as an intent filters in <activity> tag
 #android.manifest.intent_filters =
 
+# (list) Copy these files to src/main/res/xml/ (used for example with intent-filters)
+#android.res_xml = PATH_TO_FILE,
+
 # (str) launchMode to set for the main activity
 #android.manifest.launch_mode = standard
+
+# (str) screenOrientation to set for the main activity.
+# Valid values can be found at https://developer.android.com/guide/topics/manifest/activity-element
+#android.manifest.orientation = fullSensor
 
 # (list) Android additional libraries to copy into libs/armeabi
 #android.add_libs_armeabi = libs/android/*.so
@@ -239,7 +270,7 @@ android.enable_androidx = True
 #android.wakelock = False
 
 # (list) Android application meta-data to set (key=value format)
-android.meta_data = com.google.android.gms.APPLICATION_ID=ca-app-pub-3940256099942544~3347511713
+android.meta_data = com.google.android.gms.ads.APPLICATION_ID=ca-app-pub-3940256099942544~3347511713
 
 # (list) Android library project to add (will be added in the
 # project.properties automatically.)
@@ -249,7 +280,7 @@ android.meta_data = com.google.android.gms.APPLICATION_ID=ca-app-pub-39402560999
 #android.uses_library =
 
 # (str) Android logcat filters to use
-android.logcat_filters = *:S python:D
+#android.logcat_filters = *:S python:D
 
 # (bool) Android logcat only display log for activity's pid
 #android.logcat_pid_only = False
@@ -280,8 +311,8 @@ android.allow_backup = True
 # Usage example : android.manifest_placeholders = [myCustomUrl:\"org.kivy.customurl\"]
 # android.manifest_placeholders = [:]
 
-# (bool) disables the compilation of py to pyc/pyo files when packaging
-# android.no-compile-pyo = True
+# (bool) Skip byte compile for .py files
+# android.no-byte-compile-python = False
 
 # (str) The format used to package the app for release mode (aab or apk or aar).
 # android.release_artifact = aab
@@ -300,7 +331,7 @@ android.allow_backup = True
 #p4a.fork = kivy
 
 # (str) python-for-android branch to use, defaults to master
-p4a.branch = master
+#p4a.branch = master
 
 # (str) python-for-android specific commit to use, defaults to HEAD, must be within p4a.branch
 #p4a.commit = HEAD
@@ -331,6 +362,7 @@ p4a.branch = master
 #p4a.extra_args =
 
 
+
 #
 # iOS specific
 #
@@ -338,18 +370,18 @@ p4a.branch = master
 # (str) Path to a custom kivy-ios folder
 #ios.kivy_ios_dir = ../kivy-ios
 # Alternately, specify the URL and branch of a git checkout:
-#ios.kivy_ios_url = https://github.com/kivy/kivy-ios
-#ios.kivy_ios_branch = master
+ios.kivy_ios_url = https://github.com/kivy/kivy-ios
+ios.kivy_ios_branch = master
 
 # Another platform dependency: ios-deploy
 # Uncomment to use a custom checkout
 #ios.ios_deploy_dir = ../ios_deploy
 # Or specify URL and branch
-#ios.ios_deploy_url = https://github.com/phonegap/ios-deploy
-#ios.ios_deploy_branch = 1.10.0
+ios.ios_deploy_url = https://github.com/phonegap/ios-deploy
+ios.ios_deploy_branch = 1.10.0
 
 # (bool) Whether or not to sign the code
-#ios.codesign.allowed = false
+ios.codesign.allowed = false
 
 # (str) Name of the certificate to use for signing the debug version
 # Get a list of available identities: buildozer ios list_identities

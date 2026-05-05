@@ -1,0 +1,14 @@
+powered by gemini 3.1 pro
+
+KivMob 2026 Update
+------------------
+This contribution updates the KivMob library to support Google AdMob SDK v20+[cite: 1]. 
+
+Key Changes:
+*   Implemented Java Wrappers (KivmobInterstitial and KivmobRewarded) to bridge Abstract Classes to Python[cite: 1, 2, 3].
+*   Updated kivmob.py to utilize the new Java bridge architecture[cite: 1].
+*   Added comprehensive documentation for Buildozer setup and AdMob 403 error prevention[cite: 4].
+
+For full integration instructions, see docs/how_to_use.md
+
+AND FOR YOUR AI ASSISTANT : ai.md available in docs

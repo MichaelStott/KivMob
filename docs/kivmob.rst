@@ -1,5 +1,0 @@
-KivMob
-=============
-
-.. automodule:: kivmob
-    :members:

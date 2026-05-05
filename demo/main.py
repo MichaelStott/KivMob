@@ -1,215 +1,102 @@
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
+from kivy.uix.label import Label
+from kivy.logger import Logger
+
+# Import our updated KivMob module[cite: 1]
 from kivmob import KivMob, TestIds, RewardedListenerInterface
 
-import kivy.utils
-from kivymd.app import MDApp
-from kivy.lang import Builder
-from kivy.config import Config
-from kivy.utils import platform
-from kivy.core.window import Window
-from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.screenmanager import ScreenManager
-from kivy.uix.image import Image
-from kivy.properties import NumericProperty
-
-if platform not in ("android", "ios"):
-    # Approximate dimensions of mobile phone.
-    Config.set("graphics", "resizable", "0")
-    Window.size = (400, 600)
-
-__version__ = "1.0"
-
-from kivymd.theming import ThemeManager
-from kivymd.uix.list import ILeftBody
-from kivymd.uix.list import OneLineListItem
-from kivymd.uix.list import TwoLineListItem
-from kivymd.uix.list import ThreeLineListItem
-from kivymd.uix.snackbar import Snackbar
-
-Builder.load_string(
-"""
-#:import kivy kivy
-#.import Snackbar kivymd.uix.snackbar.Snackbar
-#:import MDList kivymd.uix.list.MDList
-#:import OneLineListItem kivymd.uix.list.OneLineListItem
-#:import TwoLineListItem kivymd.uix.list.TwoLineListItem
-#:import ThreeLineListItem kivymd.uix.list.ThreeLineListItem
-
-#:import webbrowser webbrowser
-
-<KivMobDemoUI>:
-    BoxLayout:
-        orientation: 'vertical'
-        MDToolbar:
-            id: toolbar
-            title: 'KivMob 2.0'
-            md_bg_color: app.theme_cls.primary_color
-        ScreenManager:
-            id: scr_mngr
-            Screen:
-                name: 'menu'
-                ScrollView:
-                    do_scroll_x: False
-                    MDList:
-                        ThreeLineAvatarListItem:
-                            type: "three-line"
-                            text: "Banners"
-                            secondary_text: "Rectangular image or text ads that occupy a spot within an app's layout."
-                            on_press: app.root.switch_to_screen("banner", "Banners")
-                            AvatarIconWidget:
-                                source: './assets/banner.png'
-                        ThreeLineAvatarListItem:
-                            type: "three-line"
-                            text: "Interstitial"
-                            secondary_text: "Full-screen ads that cover the interface of an app until closed by the user."
-                            on_press: app.root.switch_to_screen("interstitial", "Interstitial")
-                            AvatarIconWidget:
-                                source: './assets/interstitial.png'
-                        ThreeLineAvatarListItem:
-                            type: "three-line"
-                            text: "Rewarded Video"
-                            secondary_text: "Video ads that users may watch in exchange for in-app rewards."
-                            on_press: app.root.switch_to_screen("rewarded", "Rewarded Video Ad")
-                            AvatarIconWidget:
-                                source: './assets/rewarded.png'
-                        ThreeLineAvatarListItem:
-                            type: "three-line"
-                            text: "Documentation"
-                            secondary_text: "Learn how to utilize KivMob within a mobile Kivy application."
-                            on_press: webbrowser.open("https://kivmob.com")
-                            AvatarIconWidget:
-                                source: './assets/documentation.png'
-                        ThreeLineAvatarListItem:
-                            type: "three-line"
-                            text: "Source Code"
-                            secondary_text: "Checkout, fork, and follow the KivMob project on GitHub."
-                            on_press: webbrowser.open("https://github.com/MichaelStott/KivMob")
-                            AvatarIconWidget:
-                                source: './assets/github.png'
-                        ThreeLineAvatarListItem:
-                            type: "three-line"
-                            text: "About"
-                            secondary_text: "Software licensing, credits, and other KivMob information."
-                            on_press: webbrowser.open("https://github.com/MichaelStott/KivMob")
-                            AvatarIconWidget:
-                                source: './assets/about.png'
-            Screen:
-                name: "banner"
-                on_pre_leave:
-                    app.ads.hide_banner()
-                    app.show_banner = False
-                MDRaisedButton:
-                    text: "Toggle Banner Ad"
-                    elevation_normal: 2
-                    opposite_colors: True
-                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-                    on_press: app.toggle_banner()
-            Screen:
-                name: "interstitial"
-                MDRaisedButton:
-                    text: "Show Interstitial"
-                    elevation_normal: 2
-                    opposite_colors: True
-                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-                    on_press: app.ads.show_interstitial() if app.ads.is_interstitial_loaded() else app.root.show_interstitial_msg()
-            Screen:
-                name: 'rewarded'
-                BoxLayout:
-                    MDLabel:
-                        font_style: 'H1'
-                        theme_text_color: 'Primary'
-                        text: "Points: "+str(app.Points)
-                        halign: 'center'
-                        pos_hint: {'center_x': 0.5, 'center_y': 0.75}
-                MDFloatingActionButton:
-                    icon: 'plus'
-                    elevation_normal: 2
-                    pos_hint: {'center_x': 0.5, 'center_y': 0.25}
-                    on_press: app.ads.show_rewarded_ad()
-"""
-)
-
-class AvatarIconWidget(ILeftBody, Image):
-    pass
-
-class KivMobDemoUI(FloatLayout):
-    def switch_to_screen(self, name, title):
-        self.ids.toolbar.title = title
-        self.ids.toolbar.left_action_items = [
-            ["chevron-left", lambda x: self.back_to_menu()]
-        ]
-        self.ids.scr_mngr.transition.direction = "left"
-        self.ids.scr_mngr.current = name
-        self.interstitial_snack = Snackbar(
-            text="Interstitial has not yet loaded."
-        )
-
-    def back_to_menu(self):
-        self.ids.scr_mngr.transition.direction = "right"
-        self.ids.scr_mngr.current = "menu"
-        self.ids.toolbar.title = "KivMob 2.0"
-        self.ids.toolbar.left_action_items = []
-
-    def show_interstitial_msg(self):
-        self.interstitial_snack.show()
-
-    def hide_interstitial_msg(self):
-        self.interstitial_snack.hide()
-
-    def open_dialog(self):
-        pass
-
-class KivMobDemo(MDApp):
-
-    def __init__(self,**kwargs):
-        self.theme_cls.theme_style = "Dark"
-        super().__init__(**kwargs)
-        self.rewards = Rewards_Handler(self)
-
-    Points = NumericProperty(0)
-    show_banner = False
-
-    def build(self):
-        self.ads = KivMob(TestIds.APP)
-        self.ads.new_banner(TestIds.BANNER, False)
-        self.ads.new_interstitial(TestIds.INTERSTITIAL)
-        self.ads.request_banner()
-        self.ads.request_interstitial()
-        self.ads.set_rewarded_ad_listener(self.rewards)
-        self.ads.load_rewarded_ad(TestIds.REWARDED_VIDEO)
-        self.toggled = False
-        return KivMobDemoUI()
-
-    def toggle_banner(self):
-        self.show_banner = not self.show_banner
-        if self.show_banner:
-            self.ads.show_banner()
-        else:
-            self.ads.hide_banner()
-
-    def load_video(self):
-        self.ads.load_rewarded_ad(TestIds.REWARDED_VIDEO)
-
-class Rewards_Handler(RewardedListenerInterface):
-
-    def __init__(self,other):
-        self.AppObj = other
-
-    Reward = "None"
-    Reward_Amount = "None"
-
+class MyRewardedListener(RewardedListenerInterface):
+    """
+    This class handles events coming back from the KivmobRewarded.java wrapper[cite: 2].
+    """
     def on_rewarded(self, reward_name, reward_amount):
-        self.Reward = reward_name
-        self.Reward_Amount = reward_amount
-        self.AppObj.Points += int(reward_amount)
+        # This is triggered by the Java bridge when the user finishes the video[cite: 1, 2]
+        print(f"REWARD GRANTED: You received {reward_amount} {reward_name}!")
+        Logger.info(f"KivMob: User earned {reward_amount} {reward_name}")
 
-    def on_rewarded_video_ad_completed(self):
-        self.on_rewarded(self.Reward,self.Reward_Amount)
+    def on_rewarded_video_ad_loaded(self):
+        print("Rewarded Ad: Ready to show!")
 
-    def on_rewarded_video_ad_started(self):
-        self.AppObj.load_video()
+    def on_rewarded_video_ad_failed_to_load(self, error_code):
+        print(f"Rewarded Ad: Failed to load. Error: {error_code}")
 
-    def on_rewarded_video_ad_left_application(self):
-        self.AppObj.Points += 0
+
+class AdTestLayout(BoxLayout):
+    def __init__(self, ads, **kwargs):
+        super().__init__(orientation='vertical', padding=30, spacing=20, **kwargs)
+        self.ads = ads
+
+        self.add_widget(Label(text="KivMob AdMob v20+ Tester", font_size='20sp', size_hint_y=0.2))
+
+        # --- BANNER SECTION ---
+        # Banners load and show immediately in this example[cite: 1]
+        btn_banner = Button(text="Show/Refresh Banner", background_color=(0.2, 0.6, 1, 1))
+        btn_banner.bind(on_release=lambda x: self.test_banner())
+        self.add_widget(btn_banner)
+
+        # --- INTERSTITIAL SECTION ---
+        btn_load_interstitial = Button(text="Load Interstitial")
+        btn_load_interstitial.bind(on_release=lambda x: self.load_interstitial())
+        self.add_widget(btn_load_interstitial)
+
+        btn_show_interstitial = Button(text="Show Interstitial")
+        btn_show_interstitial.bind(on_release=lambda x: self.show_interstitial())
+        self.add_widget(btn_show_interstitial)
+
+        # --- REWARDED SECTION ---
+        btn_load_rewarded = Button(text="Load Rewarded Ad")
+        btn_load_rewarded.bind(on_release=lambda x: self.load_rewarded())
+        self.add_widget(btn_load_rewarded)
+
+        btn_show_rewarded = Button(text="Show Rewarded Ad", background_color=(0.2, 0.8, 0.2, 1))
+        btn_show_rewarded.bind(on_release=lambda x: self.show_rewarded())
+        self.add_widget(btn_show_rewarded)
+
+    def test_banner(self):
+        print("Action: Requesting Banner...")
+        self.ads.new_banner(TestIds.BANNER, top_pos=False) #[cite: 1]
+        self.ads.request_banner() #[cite: 1]
+        self.ads.show_banner() #[cite: 1]
+
+    def load_interstitial(self):
+        print("Action: Loading Interstitial...")
+        self.ads.new_interstitial(TestIds.INTERSTITIAL) #[cite: 1]
+        self.ads.request_interstitial() #[cite: 1]
+
+    def show_interstitial(self):
+        if self.ads.is_interstitial_loaded(): #[cite: 1]
+            print("Action: Showing Interstitial.")
+            self.ads.show_interstitial() #[cite: 1]
+        else:
+            print("Status: Interstitial not loaded yet. Click Load first.")
+
+    def load_rewarded(self):
+        print("Action: Loading Rewarded Ad...")
+        self.ads.load_rewarded_ad(TestIds.REWARDED_VIDEO) #[cite: 1]
+
+    def show_rewarded(self):
+        if self.ads.is_rewarded_loaded(): #[cite: 1]
+            print("Action: Showing Rewarded Ad.")
+            self.ads.show_rewarded_ad() #[cite: 1]
+        else:
+            print("Status: Rewarded Ad not loaded yet. Click Load first.")
+
+
+class KivMobTestApp(App):
+    def build(self):
+        # 1. Initialize with App ID[cite: 1]
+        self.ads = KivMob(TestIds.APP) 
+        
+        # 2. Add Test Device ID (Required for modern AdMob testing)[cite: 1]
+        # Replace with your actual device ID hash from logcat
+        self.ads.add_test_device("YOUR_DEVICE_HASH_ID") 
+
+        # 3. Set the listener for Rewarded Video rewards[cite: 1]
+        self.ads.set_rewarded_ad_listener(MyRewardedListener()) 
+
+        return AdTestLayout(self.ads)
 
 if __name__ == "__main__":
-    KivMobDemo().run()
+    KivMobTestApp().run()
