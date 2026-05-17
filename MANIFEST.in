@@ -1,0 +1,3 @@
+include CHANGELOG.md
+recursive-include changelog *.md
+include scripts/version.py

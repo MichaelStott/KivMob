@@ -1,0 +1,93 @@
+# Build and smoke-test interstitial ads on an Android emulator (Google test units).
+name: Android — Interstitial Tests
+
+on:
+  push:
+    branches: [master, main]
+    paths:
+      - "tests/android_ci/interstitial/**"
+      - "changelog/**"
+      - "CHANGELOG.md"
+      - "scripts/version.py"
+      - "tests/android_ci/buildozer.spec.in"
+      - "kivmob.py"
+      - "p4a_recipes/**"
+      - "android/kivmob-bridge/**"
+      - "scripts/ci/**"
+      - ".github/workflows/android-ad-interstitial.yml"
+  pull_request:
+    paths:
+      - "tests/android_ci/interstitial/**"
+      - "changelog/**"
+      - "CHANGELOG.md"
+      - "scripts/version.py"
+      - "tests/android_ci/buildozer.spec.in"
+      - "kivmob.py"
+      - "p4a_recipes/**"
+      - "android/kivmob-bridge/**"
+      - "scripts/ci/**"
+      - ".github/workflows/android-ad-interstitial.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: android-ad-interstitial-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Publish kivmob-bridge to Maven local
+        run: |
+          chmod +x scripts/ci/*.sh
+          ./scripts/ci/sync_bridge_for_p4a.sh
+          cd android/kivmob-bridge && chmod +x gradlew && ./gradlew :kivmob-bridge:publishToMavenLocal
+
+      - name: Build debug APK (Docker / buildozer)
+        run: ./scripts/ci/build_android_apk.sh interstitial
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apk-interstitial
+          path: tests/android_ci/interstitial/bin/*debug*.apk
+          if-no-files-found: error
+
+  emulator-smoke:
+    needs: build-apk
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: apk-interstitial
+          path: apk
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis_playstore
+          arch: x86_64
+          profile: pixel_7
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+          disable-animations: true
+          script: |
+            chmod +x scripts/ci/emulator_ad_test.sh
+            ./scripts/ci/emulator_ad_test.sh interstitial apk/*.apk

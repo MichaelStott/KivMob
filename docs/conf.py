@@ -16,7 +16,12 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath(".."))
+sys.path.insert(0, os.path.abspath("../scripts"))
 
+from version import get_version
+
+_release = get_version("kivmob")
+_parts = _release.split(".")
 
 # -- Project information -----------------------------------------------------
 
@@ -25,9 +30,9 @@ copyright = u"2018, Michael Stott"
 author = u"Michael Stott"
 
 # The short X.Y version
-version = u""
+version = u".".join(_parts[:2]) if len(_parts) >= 2 else _release
 # The full version, including alpha/beta/rc tags
-release = u"2.0"
+release = _release
 
 
 # -- General configuration ---------------------------------------------------

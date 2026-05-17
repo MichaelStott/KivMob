@@ -5,6 +5,11 @@ __pycache__/
 demo/.buildozer
 demo/kivmob.py
 demo/bin
+tests/android_ci/*/.buildozer
+tests/android_ci/*/bin
+tests/android_ci/*/kivmob.py
+tests/android_ci/*/buildozer.spec
+.ci-cache/
 
 # C extensions
 *.so
@@ -39,6 +44,7 @@ pip-log.txt
 pip-delete-this-directory.txt
 
 # Unit test / coverage reports
+.pytest_cache/
 htmlcov/
 .tox/
 .coverage
@@ -100,3 +106,7 @@ ENV/
 # mkdocs documentation
 /site
 docs/_build
+
+# Android Gradle (kivmob-bridge)
+android/kivmob-bridge/.gradle/
+android/kivmob-bridge/local.properties

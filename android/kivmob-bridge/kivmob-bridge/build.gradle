@@ -1,0 +1,87 @@
+plugins {
+    id("com.android.library")
+    id("maven-publish")
+}
+
+android {
+    namespace = "org.kivmob.kivmob"
+    compileSdk = 34
+
+    defaultConfig {
+        minSdk = 23
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            consumerProguardFiles("consumer-rules.pro")
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
+}
+
+dependencies {
+    implementation("com.google.android.gms:play-services-ads:25.2.0")
+}
+
+def readVersionFromChangelog() {
+    def repoRoot = rootProject.projectDir.parentFile.parentFile
+    def changelog = new File(repoRoot, "changelog/kivmob-bridge.md")
+    if (!changelog.isFile()) {
+        throw new GradleException("Missing changelog at ${changelog}")
+    }
+    def pattern = ~/^## \[([^\]]+)\]/
+    for (line in changelog.readLines("UTF-8")) {
+        def matcher = pattern.matcher(line.trim())
+        if (!matcher.find()) {
+            continue
+        }
+        def version = matcher.group(1).trim()
+        if (version.equalsIgnoreCase("unreleased")) {
+            continue
+        }
+        return version
+    }
+    throw new GradleException("No release version in changelog/kivmob-bridge.md")
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                groupId = findProperty("bridgeGroupId") ?: "org.kivmob"
+                artifactId = findProperty("bridgeArtifactId") ?: "kivmob-bridge"
+                version = findProperty("bridgeVersion") ?: readVersionFromChangelog()
+                from components.release
+            }
+        }
+        repositories {
+            mavenLocal()
+            def repoUrl = findProperty("mavenRepoUrl") ?: System.getenv("MAVEN_REPO_URL")
+            if (repoUrl) {
+                maven {
+                    name = "remote"
+                    url = uri(repoUrl)
+                    credentials {
+                        username = findProperty("mavenRepoUsername")
+                            ?: System.getenv("MAVEN_REPO_USERNAME")
+                            ?: ""
+                        password = findProperty("mavenRepoPassword")
+                            ?: System.getenv("MAVEN_REPO_PASSWORD")
+                            ?: ""
+                    }
+                }
+            }
+        }
+    }
+}

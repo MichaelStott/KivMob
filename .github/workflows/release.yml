@@ -1,0 +1,134 @@
+# Publish kivmob (PyPI) or org.kivmob:kivmob-bridge (GitHub Packages Maven).
+#
+# Tags (GitHub release):
+#   kivmob-vX.Y.Z        → PyPI only
+#   kivmob-bridge-vX.Y.Z → Maven only
+#
+# Version must match changelog/<package>.md (first section below Unreleased).
+#
+# Secrets / setup:
+#   PyPI — trusted publisher (project: kivmob, workflow: release.yml) or PYPI_API_TOKEN.
+#   Maven — GITHUB_TOKEN (packages: write); URL maven.pkg.github.com/OWNER/REPO.
+
+name: Release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      package:
+        description: "Artifact to publish"
+        required: true
+        type: choice
+        options:
+          - kivmob
+          - kivmob-bridge
+      version:
+        description: "Version (e.g. 2.1.0); must match changelog/<package>.md"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+  packages: write
+
+concurrency:
+  group: release-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    outputs:
+      package: ${{ steps.meta.outputs.package }}
+      version: ${{ steps.meta.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve package and version
+        id: meta
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "release" ]; then
+            TAG="${{ github.event.release.tag_name }}"
+            case "$TAG" in
+              kivmob-v*)
+                PACKAGE=kivmob
+                VERSION="${TAG#kivmob-v}"
+                ;;
+              kivmob-bridge-v*)
+                PACKAGE=kivmob-bridge
+                VERSION="${TAG#kivmob-bridge-v}"
+                ;;
+              *)
+                echo "Unsupported tag: $TAG"
+                echo "Use kivmob-vX.Y.Z or kivmob-bridge-vX.Y.Z"
+                exit 1
+                ;;
+            esac
+          else
+            PACKAGE="${{ inputs.package }}"
+            VERSION="${{ inputs.version }}"
+          fi
+          if [ -z "$VERSION" ]; then
+            echo "Empty version"
+            exit 1
+          fi
+          CHANGELOG_VERSION="$(python3 scripts/version.py "$PACKAGE")"
+          if [ "$VERSION" != "$CHANGELOG_VERSION" ]; then
+            echo "Release $VERSION does not match changelog/$PACKAGE.md ($CHANGELOG_VERSION)"
+            exit 1
+          fi
+          echo "package=$PACKAGE" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Publishing $PACKAGE $VERSION"
+
+  publish-pypi:
+    needs: resolve
+    if: needs.resolve.outputs.package == 'kivmob'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build and validate Python package
+        run: |
+          pip install build twine
+          make pypi-build
+          python -m twine check dist/*
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/
+
+  publish-maven:
+    needs: resolve
+    if: needs.resolve.outputs.package == 'kivmob-bridge'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Publish Android bridge to GitHub Packages Maven
+        env:
+          MAVEN_REPO_URL: https://maven.pkg.github.com/${{ github.repository }}
+          MAVEN_REPO_USERNAME: ${{ github.repository_owner }}
+          MAVEN_REPO_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x scripts/ci/*.sh android/kivmob-bridge/gradlew
+          ./scripts/ci/sync_bridge_for_p4a.sh
+          cd android/kivmob-bridge
+          ./gradlew :kivmob-bridge:publishReleasePublicationToRemoteRepository \
+            -PbridgeVersion="${{ needs.resolve.outputs.version }}"

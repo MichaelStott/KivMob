@@ -37,7 +37,8 @@ version = 0.1
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3, kivy, jnius, android, https://github.com/MichaelStott/KivMob/archive/refs/heads/master.zip
+# kivmob.py is copied into source.dir before build (make sync-demo-module); do not list kivmob here.
+requirements = python3, kivy, kivymd, jnius, android
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
@@ -99,13 +100,13 @@ android.permissions = INTERNET, ACCESS_NETWORK_STATE
 #android.features = android.hardware.usb.host
 
 # (int) Target Android API, should be as high as possible.
-android.api = 33
+android.api = 34
 
 # (int) Minimum API your APK / AAB will support.
-android.minapi = 21
+android.minapi = 23
 
 # (int) Android SDK version to use
-android.sdk = 33
+android.sdk = 34
 
 # (str) Android NDK version to use
 android.ndk = 25b
@@ -187,7 +188,9 @@ android.accept_sdk_license = True
 #android.add_assets =
 
 # (list) Gradle dependencies to add
-android.gradle_dependencies = com.google.firebase:firebase-ads:21.4.0
+# kivmob-bridge: published from android/kivmob-bridge (see Makefile maven-publish-bridge).
+# Use 0.1.0 after you publish a non-snapshot; default bridge version is 0.1.0-SNAPSHOT.
+android.gradle_dependencies = com.google.android.gms:play-services-ads:25.2.0, org.kivmob:kivmob-bridge:0.1.0-SNAPSHOT
 
 # (bool) Enable AndroidX support. Enable when 'android.gradle_dependencies'
 # contains an 'androidx' package, or any package from Kotlin source.
@@ -200,9 +203,15 @@ android.enable_androidx = True
 # android.add_compile_options = "sourceCompatibility = 1.8", "targetCompatibility = 1.8"
 
 # (list) Gradle repositories to add {can be necessary for some android.gradle_dependencies}
-# please enclose in double quotes 
-# e.g. android.gradle_repositories = "maven { url 'https://kotlin.bintray.com/ktor' }"
-#android.add_gradle_repositories =
+# please enclose in double quotes
+# GitHub Packages (owner/repo must be lowercase in the URL). For auth set GITHUB_TOKEN (classic PAT,
+# read:packages) and MAVEN_REPO_USERNAME (your GitHub login), or MAVEN_REPO_PASSWORD instead of the token.
+# Makefile docker builds pass these env vars into the container when set on the host.
+# Forks: replace michaelstott/kivmob with your owner/repo.
+# mavenLocal() first: run `make maven-publish-bridge-local` on the host so Docker Gradle (root) can
+# resolve org.kivmob:kivmob-bridge from ~/.m2 (mounted at /root/.m2). If GitHub-only resolution fails,
+# try `cd demo && buildozer android clean` then rebuild so build.gradle is regenerated.
+android.add_gradle_repositories = mavenLocal(),"maven { url 'https://maven.pkg.github.com/michaelstott/kivmob'; credentials { username = System.getenv('MAVEN_REPO_USERNAME') ?: ''; password = System.getenv('MAVEN_REPO_PASSWORD') ?: System.getenv('GITHUB_TOKEN') ?: '' } }"
 
 # (list) packaging options to add 
 # see https://google.github.io/android-gradle-dsl/current/com.android.build.gradle.internal.dsl.PackagingOptions.html
@@ -239,7 +248,7 @@ android.enable_androidx = True
 #android.wakelock = False
 
 # (list) Android application meta-data to set (key=value format)
-android.meta_data = com.google.android.gms.APPLICATION_ID=ca-app-pub-3940256099942544~3347511713
+android.meta_data = com.google.android.gms.ads.APPLICATION_ID=ca-app-pub-3940256099942544~3347511713
 
 # (list) Android library project to add (will be added in the
 # project.properties automatically.)
@@ -262,7 +271,8 @@ android.logcat_filters = *:S python:D
 
 # (list) The Android archs to build for, choices: armeabi-v7a, arm64-v8a, x86, x86_64
 # In past, was `android.arch` as we weren't supporting builds for multiple archs at the same time.
-android.archs = arm64-v8a, armeabi-v7a
+# x86_64 is included so the same debug APK runs on the default Android Emulator (x86_64 AVD).
+android.archs = arm64-v8a, armeabi-v7a, x86_64
 
 # (int) overrides automatic versionCode computation (used in build.gradle)
 # this is not the same as app version and should only be edited if you know what you're doing
@@ -383,7 +393,7 @@ p4a.branch = master
 log_level = 2
 
 # (int) Display warning if buildozer is run as root (0 = False, 1 = True)
-warn_on_root = 1
+warn_on_root = 0
 
 # (str) Path to build artifact storage, absolute or relative to spec file
 # build_dir = ./.buildozer
@@ -428,3 +438,7 @@ warn_on_root = 1
 #    Then, invoke the command line with the "demo" profile:
 #
 #buildozer --profile demo android debug
+
+[app@emulator]
+# Faster local emulator builds: build only x86_64 ABI.
+android.archs = x86_64

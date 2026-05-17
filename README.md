@@ -76,7 +76,7 @@ android.api = 33
 android.minapi = 21
 android.sdk = 33
 android.ndk = 25b
-android.gradle_dependencies = com.google.firebase:firebase-ads:21.4.0
+android.gradle_dependencies = com.google.firebase:firebase-ads:23.6.0
 android.enable_androidx = True
 p4a.branch = master
 android.meta_data = com.google.android.gms.ads.APPLICATION_ID=ca-app-pub-3940256099942544~3347511713
