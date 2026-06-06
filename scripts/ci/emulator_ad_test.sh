@@ -25,33 +25,48 @@ LOG_TIMEOUT="${LOG_TIMEOUT:-180}"
 ADB_DEVICE_TIMEOUT="${ADB_DEVICE_TIMEOUT:-120}"
 BOOT_TIMEOUT="${BOOT_TIMEOUT:-300}"
 
+ADB_BIN="${ADB:-adb}"
+if [ -n "${ANDROID_SERIAL:-}" ]; then
+  ADB="$ADB_BIN -s $ANDROID_SERIAL"
+else
+  ADB="$ADB_BIN"
+fi
+
 _adb_device_ready() {
-  adb get-state 2>/dev/null | grep -q '^device$'
+  $ADB get-state 2>/dev/null | grep -q '^device$'
 }
 
 echo "==> Checking for Android device (timeout ${ADB_DEVICE_TIMEOUT}s)…"
 _elapsed=0
+_offline_streak=0
 while [ "$_elapsed" -lt "$ADB_DEVICE_TIMEOUT" ]; do
   if _adb_device_ready; then
     break
+  fi
+  _state="$($ADB get-state 2>/dev/null || true)"
+  if [ "$_state" = "offline" ] || [ "$_state" = "unknown" ]; then
+    _offline_streak=$((_offline_streak + 1))
+    if [ "$_offline_streak" -ge 5 ]; then
+      echo "Device went offline — emulator likely exited. Check: docker logs kivmob-android-emulator" >&2
+      exit 1
+    fi
+  else
+    _offline_streak=0
   fi
   sleep 2
   _elapsed=$((_elapsed + 2))
 done
 if ! _adb_device_ready; then
-  echo "No Android device detected (adb devices is empty or offline)." >&2
-  echo "Start an emulator, then retry:" >&2
-  echo "  make emulator-start    # separate terminal" >&2
-  echo "  make emulator-wait" >&2
-  echo "  make ci-android-smoke APP=$AD_TYPE" >&2
+  echo "No Android device detected (adb empty/offline or emulator not running)." >&2
+  echo "  make android-test-banner   # build APK, start emulator, smoke" >&2
   exit 1
 fi
-adb devices -l
+$ADB devices -l
 
 echo "==> Waiting for boot completion (timeout ${BOOT_TIMEOUT}s)…"
 _elapsed=0
 while [ "$_elapsed" -lt "$BOOT_TIMEOUT" ]; do
-  boot="$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r' || true)"
+  boot="$($ADB shell getprop sys.boot_completed 2>/dev/null | tr -d '\r' || true)"
   if [ "$boot" = "1" ]; then
     echo "Emulator boot completed."
     break
@@ -65,11 +80,11 @@ if [ "$_elapsed" -ge "$BOOT_TIMEOUT" ]; then
 fi
 
 echo "==> Installing $APK"
-adb install -r "$APK"
+$ADB install -r "$APK"
 
 echo "==> Launching $ACTIVITY"
-adb logcat -c
-adb shell am start -n "$ACTIVITY"
+$ADB logcat -c
+$ADB shell am start -n "$ACTIVITY"
 
 LOG_FILE="$(mktemp)"
 LOG_PID=""
@@ -82,7 +97,7 @@ _stop_logcat() {
 }
 trap '_stop_logcat; rm -f "$LOG_FILE"' EXIT
 
-adb logcat -v brief '*:S' 'python:I' 'python:D' 'KivMobAdsBridge:D' >"$LOG_FILE" &
+$ADB logcat -v brief '*:S' 'python:I' 'python:D' 'KivMobAdsBridge:D' >"$LOG_FILE" &
 LOG_PID=$!
 
 wait_for_log() {
@@ -116,7 +131,7 @@ case "$AD_TYPE" in
     wait_for_log 'CI_TEST:interstitial_show' 30
     wait_for_log 'KivMob: interstitial shown' 60
     sleep 2
-    adb shell input keyevent 4
+    $ADB shell input keyevent 4
     wait_for_log 'KivMob: interstitial dismissed' 45
     ;;
   rewarded)

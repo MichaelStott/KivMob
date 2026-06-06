@@ -1,0 +1,44 @@
+# Reusable job: same path as local `make android-test-<app>` (scripts/ci/docker_android_test.sh).
+# Requires native Docker Engine + KVM on the runner (ubuntu-latest), not Docker Desktop / no-KVM fallback.
+name: Android ad test (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      app:
+        description: banner, interstitial, or rewarded
+        required: true
+        type: string
+
+jobs:
+  android-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 200
+    env:
+      SKIP_AUTH: "true"
+      ANDROID_EMU_MEMORY: "4096"
+      ANDROID_EMU_SHM: "2gb"
+      ANDROID_EMU_CORES: "2"
+      ANDROID_BOOT_TIMEOUT: "600"
+      LOG_TIMEOUT: "180"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Enable KVM for nested emulator (/dev/kvm → container)
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Verify Docker Engine + KVM passthrough (required)
+        run: |
+          chmod +x scripts/ci/*.sh
+          ./scripts/ci/verify_android_kvm_host.sh
+
+      - name: "Run docker_android_test.sh (${{ inputs.app }})"
+        run: ./scripts/ci/docker_android_test.sh "${{ inputs.app }}"
+
+      - name: Teardown emulator stack
+        if: always()
+        run: |
+          ./scripts/ci/docker_compose.sh -f docker-compose.android.yml down -v --remove-orphans 2>/dev/null || true

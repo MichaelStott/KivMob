@@ -10,7 +10,7 @@ _VERSION_HEADING = re.compile(r"^## \[([^\]]+)\]")
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 _CHANGELOG_DIR = _REPO_ROOT / "changelog"
 
-PACKAGES = ("kivmob", "kivmob-bridge")
+PACKAGES = ("kivmob", "kivmob-android-bridge")
 
 
 def get_version(package: str = "kivmob") -> str:

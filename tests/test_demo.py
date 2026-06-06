@@ -10,14 +10,18 @@ import demo.main as demo_main
 
 
 def test_configure_window_for_desktop_preview_sets_size_on_linux():
-    with patch.object(demo_main, "Config") as mock_cfg, patch.object(demo_main, "Window") as mock_win:
+    with patch.object(demo_main, "Config") as mock_cfg, patch.object(
+        demo_main, "Window"
+    ) as mock_win:
         demo_main._configure_window_for_desktop_preview("linux")
         mock_cfg.set.assert_called_once_with("graphics", "resizable", "0")
         assert mock_win.size == (400, 600)
 
 
 def test_configure_window_for_desktop_preview_skips_mobile():
-    with patch.object(demo_main, "Config") as mock_cfg, patch.object(demo_main, "Window") as mock_win:
+    with patch.object(demo_main, "Config") as mock_cfg, patch.object(
+        demo_main, "Window"
+    ) as mock_win:
         demo_main._configure_window_for_desktop_preview("android")
         mock_cfg.set.assert_not_called()
         assert not mock_win.mock_calls

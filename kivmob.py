@@ -3,7 +3,6 @@ from kivy.logger import Logger
 from kivy.metrics import dp
 from kivy.utils import platform
 
-
 try:
     from importlib.metadata import version as _package_version
 
@@ -23,19 +22,17 @@ if platform == "android":
         AdView = autoclass("com.google.android.gms.ads.AdView")
         Bundle = autoclass("android.os.Bundle")
         Gravity = autoclass("android.view.Gravity")
-        InterstitialAd = autoclass(
-            "com.google.android.gms.ads.interstitial.InterstitialAd"
-        )
         KivMobAdsBridge = autoclass("org.kivmob.kivmob.KivMobAdsBridge")
         LayoutParams = autoclass("android.view.ViewGroup$LayoutParams")
         LinearLayout = autoclass("android.widget.LinearLayout")
         MobileAds = autoclass("com.google.android.gms.ads.MobileAds")
-        RewardedAd = autoclass("com.google.android.gms.ads.rewarded.RewardedAd")
         View = autoclass("android.view.View")
         AdMobAdapter = autoclass("com.google.ads.mediation.admob.AdMobAdapter")
 
     except BaseException as exc:
-        Logger.error("KivMob: Cannot load AdMob classes. Check buildozer.spec. %s" % exc)
+        Logger.error(
+            "KivMob: Cannot load AdMob classes. Check buildozer.spec. %s" % exc
+        )
         activity = None
         _ANDROID_ADS_OK = False
     else:
@@ -49,9 +46,15 @@ if platform == "android":
             ]
             __javacontext__ = "app"
 
-            @java_method("(Lcom/google/android/gms/ads/initialization/InitializationStatus;)V")
+            def __init__(self, bridge):
+                super().__init__()
+                self._bridge = bridge
+
+            @java_method(
+                "(Lcom/google/android/gms/ads/initialization/InitializationStatus;)V"
+            )
             def onInitializationComplete(self, _status):
-                Logger.info("KivMob: Mobile Ads initialized.")
+                self._bridge._on_ads_initialized()
 
         class KivInterstitialBridgeListener(PythonJavaClass):
             __javainterfaces__ = ["org/kivmob/kivmob/KivMobInterstitialListener"]
@@ -127,6 +130,7 @@ if platform == "android":
             def onUserEarnedReward(self, reward_type, reward_amount):
                 if self._user is not None:
                     self._user.on_rewarded(str(reward_type), str(reward_amount))
+
 else:
     _ANDROID_ADS_OK = False
 
@@ -234,6 +238,7 @@ if platform == "android" and _ANDROID_ADS_OK:
         def __init__(self, appID):
             self._app_id = appID
             self._adview = None
+            self._banner_layout = None
             self._interstitial_ad = None
             self._interstitial_unit = None
             self._interstitial_loaded = False
@@ -246,9 +251,13 @@ if platform == "android" and _ANDROID_ADS_OK:
                 self, self._reward_listener
             )
             self._test_devices = []
+            self._ads_initialized = False
+            self._pending_banner_options = None
+            self._pending_interstitial_options = None
+            self._pending_rewarded_unit = None
             m_activity = activity.mActivity
             try:
-                MobileAds.initialize(m_activity, KivOnInitCompleteListener())
+                MobileAds.initialize(m_activity, KivOnInitCompleteListener(self))
             except Exception as e:
                 Logger.error("KivMob: MobileAds.initialize failed: %s" % e)
             if appID and str(appID).strip():
@@ -256,6 +265,23 @@ if platform == "android" and _ANDROID_ADS_OK:
                     "KivMob: App ID (also set com.google.android.gms.ads.APPLICATION_ID in buildozer): %s"
                     % (appID,)
                 )
+
+        @run_on_ui_thread
+        def _on_ads_initialized(self):
+            Logger.info("KivMob: Mobile Ads initialized.")
+            self._ads_initialized = True
+            if self._pending_banner_options is not None:
+                options = self._pending_banner_options
+                self._pending_banner_options = None
+                self._load_banner(options)
+            if self._pending_interstitial_options is not None:
+                options = self._pending_interstitial_options
+                self._pending_interstitial_options = None
+                self._load_interstitial(options)
+            if self._pending_rewarded_unit is not None:
+                unit_id = self._pending_rewarded_unit
+                self._pending_rewarded_unit = None
+                self._load_rewarded(unit_id)
 
         @run_on_ui_thread
         def add_test_device(self, testID):
@@ -276,6 +302,7 @@ if platform == "android" and _ANDROID_ADS_OK:
             if self._adview is not None:
                 self._adview.destroy()
                 self._adview = None
+            self._banner_layout = None
             self._adview = AdView(activity.mActivity)
             self._adview.setAdUnitId(unitID)
             self._adview.setAdSize(self._banner_ad_size())
@@ -288,21 +315,28 @@ if platform == "android" and _ANDROID_ADS_OK:
             if not top_pos:
                 layout.setGravity(Gravity.BOTTOM)
             layout.addView(self._adview)
-            outer = LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT
-            )
+            outer = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
             layout.setLayoutParams(outer)
+            self._banner_layout = layout
             activity.mActivity.addContentView(layout, outer)
+
+        def _load_banner(self, options):
+            if self._adview is not None:
+                self._adview.loadAd(self._get_builder(options).build())
 
         @run_on_ui_thread
         def request_banner(self, options={}):
-            if self._adview is not None:
-                self._adview.loadAd(self._get_builder(options).build())
+            if not self._ads_initialized:
+                self._pending_banner_options = options
+                return
+            self._load_banner(options)
 
         @run_on_ui_thread
         def show_banner(self):
             if self._adview is not None:
                 self._adview.setVisibility(View.VISIBLE)
+                if self._banner_layout is not None:
+                    self._banner_layout.bringToFront()
 
         @run_on_ui_thread
         def hide_banner(self):
@@ -315,8 +349,7 @@ if platform == "android" and _ANDROID_ADS_OK:
             self._interstitial_ad = None
             self._interstitial_loaded = False
 
-        @run_on_ui_thread
-        def request_interstitial(self, options={}):
+        def _load_interstitial(self, options):
             if not self._interstitial_unit:
                 Logger.error("KivMob: call new_interstitial(unit_id) first.")
                 return
@@ -333,6 +366,13 @@ if platform == "android" and _ANDROID_ADS_OK:
                 Logger.warning("KivMob: interstitial load disabled: %s" % exc)
                 self._interstitial_ad = None
                 self._interstitial_loaded = False
+
+        @run_on_ui_thread
+        def request_interstitial(self, options={}):
+            if not self._ads_initialized:
+                self._pending_interstitial_options = options
+                return
+            self._load_interstitial(options)
 
         def is_interstitial_loaded(self):
             try:
@@ -355,8 +395,7 @@ if platform == "android" and _ANDROID_ADS_OK:
                 self, self._reward_listener
             )
 
-        @run_on_ui_thread
-        def load_rewarded_ad(self, unitID):
+        def _load_rewarded(self, unitID):
             self._rewarded_unit = unitID
             self._rewarded_ad = None
             self._rewarded_loaded = False
@@ -373,6 +412,13 @@ if platform == "android" and _ANDROID_ADS_OK:
                 Logger.warning("KivMob: rewarded load disabled: %s" % exc)
                 self._rewarded_ad = None
                 self._rewarded_loaded = False
+
+        @run_on_ui_thread
+        def load_rewarded_ad(self, unitID):
+            if not self._ads_initialized:
+                self._pending_rewarded_unit = unitID
+                return
+            self._load_rewarded(unitID)
 
         def is_rewarded_loaded(self):
             try:
@@ -420,6 +466,7 @@ if platform == "android" and _ANDROID_ADS_OK:
                 if len(self._test_devices) != 0:
                     builder.addTestDevice(test_device)
             return builder
+
 
 class iOSBridge(AdMobBridge):
     pass

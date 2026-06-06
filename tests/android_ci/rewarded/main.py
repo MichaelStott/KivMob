@@ -20,9 +20,7 @@ class _CiRewardedListener(RewardedListenerInterface):
         self._ads.show_rewarded_ad()
 
     def on_rewarded(self, reward_name, reward_amount):
-        Logger.info(
-            "CI_TEST:rewarded_earned %s %s" % (reward_name, reward_amount)
-        )
+        Logger.info("CI_TEST:rewarded_earned %s %s" % (reward_name, reward_amount))
 
 
 class RewardedAdCiApp(App):

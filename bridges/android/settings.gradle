@@ -17,5 +17,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "kivmob-android-bridge"
-include(":kivmob-bridge")
+rootProject.name = "android"
+include(":kivmob-android-bridge")

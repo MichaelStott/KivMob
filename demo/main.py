@@ -31,8 +31,7 @@ from kivymd.uix.list import OneLineListItem
 from kivymd.uix.list import TwoLineListItem
 from kivymd.uix.list import ThreeLineListItem
 
-Builder.load_string(
-"""
+Builder.load_string("""
 #:import kivy kivy
 #.import Snackbar kivymd.uix.snackbar.Snackbar
 #:import MDList kivymd.uix.list.MDList
@@ -153,11 +152,12 @@ Builder.load_string(
                     elevation_normal: 2
                     pos_hint: {'center_x': 0.5, 'center_y': 0.25}
                     on_press: app.ads.show_rewarded_ad()
-"""
-)
+""")
+
 
 class AvatarIconWidget(ILeftBody, Image):
     pass
+
 
 class KivMobDemoUI(FloatLayout):
     def switch_to_screen(self, name, title):
@@ -183,9 +183,10 @@ class KivMobDemoUI(FloatLayout):
     def open_dialog(self):
         pass
 
+
 class KivMobDemo(MDApp):
 
-    def __init__(self,**kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.theme_cls.theme_style = "Dark"
         self.rewards = Rewards_Handler(self)
@@ -211,12 +212,24 @@ class KivMobDemo(MDApp):
         else:
             self.ads.hide_banner()
 
+    def on_pause(self):
+        if platform == "android":
+            self.ads.hide_banner()
+
+    def on_resume(self):
+        if platform == "android":
+            self.ads.request_interstitial()
+            self.ads.load_rewarded_ad(TestIds.REWARDED_VIDEO)
+            if self.show_banner:
+                self.ads.request_banner()
+
     def load_video(self):
         self.ads.load_rewarded_ad(TestIds.REWARDED_VIDEO)
 
+
 class Rewards_Handler(RewardedListenerInterface):
 
-    def __init__(self,other):
+    def __init__(self, other):
         self.AppObj = other
 
     Reward = "None"
@@ -228,13 +241,14 @@ class Rewards_Handler(RewardedListenerInterface):
         self.AppObj.Points += int(reward_amount)
 
     def on_rewarded_video_ad_completed(self):
-        self.on_rewarded(self.Reward,self.Reward_Amount)
+        self.on_rewarded(self.Reward, self.Reward_Amount)
 
     def on_rewarded_video_ad_started(self):
         self.AppObj.load_video()
 
     def on_rewarded_video_ad_left_application(self):
         self.AppObj.Points += 0
+
 
 if __name__ == "__main__":  # pragma: no cover
     KivMobDemo().run()

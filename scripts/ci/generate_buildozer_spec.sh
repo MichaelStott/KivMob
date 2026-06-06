@@ -30,7 +30,7 @@ esac
 
 test -f "$TEMPLATE"
 
-BRIDGE_VERSION="$(python3 "$ROOT/scripts/version.py" kivmob-bridge)"
+BRIDGE_VERSION="$(python3 "$ROOT/scripts/version.py" kivmob-android-bridge)"
 
 mkdir -p "$OUT_DIR"
 sed \

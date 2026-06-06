@@ -15,7 +15,6 @@ BOZER_VOLUME="kivmob-ci-${APP}-buildozer"
 
 "$ROOT/scripts/ci/generate_buildozer_spec.sh" "$APP"
 cp "$ROOT/kivmob.py" "$APP_DIR/kivmob.py"
-"$ROOT/scripts/ci/sync_bridge_for_p4a.sh"
 P4A_DIR="$("$ROOT/scripts/ci/ensure_p4a_checkout.sh")"
 
 if [ "$CLEAN" = "1" ]; then

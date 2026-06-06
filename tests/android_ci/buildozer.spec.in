@@ -22,7 +22,7 @@ android.sdk = 34
 android.ndk = 25b
 android.accept_sdk_license = True
 
-android.gradle_dependencies = com.google.android.gms:play-services-ads:25.2.0, org.kivmob:kivmob-bridge:@BRIDGE_VERSION@
+android.gradle_dependencies = com.google.android.gms:play-services-ads:25.2.0, org.kivmob:kivmob-android-bridge:@BRIDGE_VERSION@
 android.enable_androidx = True
 android.add_gradle_repositories = mavenLocal()
 android.meta_data = com.google.android.gms.ads.APPLICATION_ID=ca-app-pub-3940256099942544~3347511713

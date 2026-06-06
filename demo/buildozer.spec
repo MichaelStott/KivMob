@@ -188,9 +188,9 @@ android.accept_sdk_license = True
 #android.add_assets =
 
 # (list) Gradle dependencies to add
-# kivmob-bridge: published from android/kivmob-bridge (see Makefile maven-publish-bridge).
-# Use 0.1.0 after you publish a non-snapshot; default bridge version is 0.1.0-SNAPSHOT.
-android.gradle_dependencies = com.google.android.gms:play-services-ads:25.2.0, org.kivmob:kivmob-bridge:0.1.0-SNAPSHOT
+# kivmob-android-bridge: published from bridges/android (see Makefile maven-publish-bridge-local).
+# Version must match changelog/kivmob-android-bridge.md (make sync-demo-spec updates this line).
+android.gradle_dependencies = com.google.android.gms:play-services-ads:25.2.0, org.kivmob:kivmob-android-bridge:1.0.0
 
 # (bool) Enable AndroidX support. Enable when 'android.gradle_dependencies'
 # contains an 'androidx' package, or any package from Kotlin source.
@@ -209,7 +209,7 @@ android.enable_androidx = True
 # Makefile docker builds pass these env vars into the container when set on the host.
 # Forks: replace michaelstott/kivmob with your owner/repo.
 # mavenLocal() first: run `make maven-publish-bridge-local` on the host so Docker Gradle (root) can
-# resolve org.kivmob:kivmob-bridge from ~/.m2 (mounted at /root/.m2). If GitHub-only resolution fails,
+# resolve org.kivmob:kivmob-android-bridge from ~/.m2 (mounted at /root/.m2). If GitHub-only resolution fails,
 # try `cd demo && buildozer android clean` then rebuild so build.gradle is regenerated.
 android.add_gradle_repositories = mavenLocal(),"maven { url 'https://maven.pkg.github.com/michaelstott/kivmob'; credentials { username = System.getenv('MAVEN_REPO_USERNAME') ?: ''; password = System.getenv('MAVEN_REPO_PASSWORD') ?: System.getenv('GITHUB_TOKEN') ?: '' } }"
 

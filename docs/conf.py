@@ -25,12 +25,12 @@ _parts = _release.split(".")
 
 # -- Project information -----------------------------------------------------
 
-project = u"KivMob"
-copyright = u"2018, Michael Stott"
-author = u"Michael Stott"
+project = "KivMob"
+copyright = "2018, Michael Stott"
+author = "Michael Stott"
 
 # The short X.Y version
-version = u".".join(_parts[:2]) if len(_parts) >= 2 else _release
+version = ".".join(_parts[:2]) if len(_parts) >= 2 else _release
 # The full version, including alpha/beta/rc tags
 release = _release
 
@@ -68,7 +68,7 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = [u"_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
@@ -133,8 +133,8 @@ latex_documents = [
     (
         master_doc,
         "KivMob.tex",
-        u"KivMob Documentation",
-        u"Michael Stott",
+        "KivMob Documentation",
+        "Michael Stott",
         "manual",
     )
 ]
@@ -144,7 +144,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, "kivmob", u"KivMob Documentation", [author], 1)]
+man_pages = [(master_doc, "kivmob", "KivMob Documentation", [author], 1)]
 
 
 # -- Options for Texinfo output ----------------------------------------------
@@ -156,7 +156,7 @@ texinfo_documents = [
     (
         master_doc,
         "KivMob",
-        u"KivMob Documentation",
+        "KivMob Documentation",
         author,
         "KivMob",
         "One line description of project.",

@@ -16,4 +16,4 @@ Python AdMob bindings for Kivy.
 
 ### Compatibility
 
-- Android builds using the Gradle bridge should use **kivmob-bridge ≥ 1.0.0**.
+- Android builds using the Gradle bridge should use **kivmob-android-bridge ≥ 1.0.0**.

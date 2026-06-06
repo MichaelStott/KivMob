@@ -10,6 +10,7 @@ tests/android_ci/*/bin
 tests/android_ci/*/kivmob.py
 tests/android_ci/*/buildozer.spec
 .ci-cache/
+.docker-android/
 
 # C extensions
 *.so
@@ -107,6 +108,6 @@ ENV/
 /site
 docs/_build
 
-# Android Gradle (kivmob-bridge)
-android/kivmob-bridge/.gradle/
-android/kivmob-bridge/local.properties
+# Android Gradle bridge (bridges/android)
+bridges/android/.gradle/
+bridges/android/local.properties

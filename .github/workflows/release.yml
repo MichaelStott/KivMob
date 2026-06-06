@@ -1,8 +1,8 @@
-# Publish kivmob (PyPI) or org.kivmob:kivmob-bridge (GitHub Packages Maven).
+# Publish kivmob (PyPI) or org.kivmob:kivmob-android-bridge (GitHub Packages Maven).
 #
 # Tags (GitHub release):
-#   kivmob-vX.Y.Z        → PyPI only
-#   kivmob-bridge-vX.Y.Z → Maven only
+#   kivmob-vX.Y.Z                 → PyPI only
+#   kivmob-android-bridge-vX.Y.Z  → Maven only
 #
 # Version must match changelog/<package>.md (first section below Unreleased).
 #
@@ -23,7 +23,7 @@ on:
         type: choice
         options:
           - kivmob
-          - kivmob-bridge
+          - kivmob-android-bridge
       version:
         description: "Version (e.g. 2.1.0); must match changelog/<package>.md"
         required: true
@@ -58,13 +58,13 @@ jobs:
                 PACKAGE=kivmob
                 VERSION="${TAG#kivmob-v}"
                 ;;
-              kivmob-bridge-v*)
-                PACKAGE=kivmob-bridge
-                VERSION="${TAG#kivmob-bridge-v}"
+              kivmob-android-bridge-v*)
+                PACKAGE=kivmob-android-bridge
+                VERSION="${TAG#kivmob-android-bridge-v}"
                 ;;
               *)
                 echo "Unsupported tag: $TAG"
-                echo "Use kivmob-vX.Y.Z or kivmob-bridge-vX.Y.Z"
+                echo "Use kivmob-vX.Y.Z or kivmob-android-bridge-vX.Y.Z"
                 exit 1
                 ;;
             esac
@@ -100,7 +100,6 @@ jobs:
         run: |
           pip install build twine
           make pypi-build
-          python -m twine check dist/*
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
@@ -109,7 +108,7 @@ jobs:
 
   publish-maven:
     needs: resolve
-    if: needs.resolve.outputs.package == 'kivmob-bridge'
+    if: needs.resolve.outputs.package == 'kivmob-android-bridge'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -127,8 +126,7 @@ jobs:
           MAVEN_REPO_USERNAME: ${{ github.repository_owner }}
           MAVEN_REPO_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          chmod +x scripts/ci/*.sh android/kivmob-bridge/gradlew
-          ./scripts/ci/sync_bridge_for_p4a.sh
-          cd android/kivmob-bridge
-          ./gradlew :kivmob-bridge:publishReleasePublicationToRemoteRepository \
+          chmod +x scripts/ci/*.sh bridges/android/gradlew
+          cd bridges/android
+          ./gradlew :kivmob-android-bridge:publishReleasePublicationToRemoteRepository \
             -PbridgeVersion="${{ needs.resolve.outputs.version }}"

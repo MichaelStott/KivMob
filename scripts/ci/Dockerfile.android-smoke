@@ -1,0 +1,12 @@
+# Minimal image to run adb + emulator_ad_test.sh against a docker-android emulator.
+FROM debian:bookworm-slim
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        adb \
+        bash \
+        ca-certificates \
+        coreutils \
+        findutils \
+        grep \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /workspace
