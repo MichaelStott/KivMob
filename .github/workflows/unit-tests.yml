@@ -46,8 +46,14 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install Kivy system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            xvfb libgl1 libglib2.0-0 libmtdev1 libsm6 libxrender1 libxext6
+
       - name: Install test dependencies
         run: pip install -r requirements-test.txt
 
       - name: Run unit tests
-        run: make test
+        run: xvfb-run -a make test
