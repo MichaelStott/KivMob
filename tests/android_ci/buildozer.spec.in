@@ -29,7 +29,7 @@ android.logcat_filters = *:S python:D KivMobAdsBridge:D
 android.archs = arm64-v8a, armeabi-v7a, x86_64
 
 # Pinned checkout mounted at /home/user/p4a (see scripts/ci/ensure_p4a_checkout.sh).
-# AGP 8.11 + Python 3.11.5; avoids p4a HEAD (Python 3.14).
+# p4a 957a3e5f + AGP 8.11 patch; avoids p4a HEAD (Python 3.14 / PyProjectRecipe).
 p4a.source_dir = /home/user/p4a
 
 [app@emulator]

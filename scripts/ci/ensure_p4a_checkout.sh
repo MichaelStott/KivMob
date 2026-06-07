@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-# Pinned python-for-android for CI: Python 3.11.5 + AGP 8.11 (Kotlin 2.x / play-services-ads 25.x).
-# Do not use p4a HEAD — it targets Python 3.14 and breaks the pinned buildozer image toolchain.
+# Pinned python-for-android for CI (Python 3.11.5, CythonRecipe pyjnius).
+# AGP/Gradle are patched after checkout for play-services-ads 25.x (Kotlin 2.x / R8 8.11).
+# Do not use p4a HEAD — it targets Python 3.14 and PyProjectRecipe builds that fail in buildozer.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-P4A_COMMIT="${P4A_COMMIT:-a8f2ca1c5b1bb6696b47fdf2c052285e116e0ebe}"
+P4A_COMMIT="${P4A_COMMIT:-957a3e5f}"
 P4A_DIR="${P4A_DIR:-$ROOT/.ci-cache/p4a-$P4A_COMMIT}"
 
 if [ ! -d "$P4A_DIR/.git" ]; then
@@ -14,5 +15,18 @@ fi
 
 git -C "$P4A_DIR" fetch --depth 1 origin "$P4A_COMMIT" 2>/dev/null || git -C "$P4A_DIR" fetch --unshallow 2>/dev/null || true
 git -C "$P4A_DIR" checkout -f "$P4A_COMMIT"
+
+patch_p4a_android_gradle() {
+  local gradle_tmpl="$P4A_DIR/pythonforandroid/bootstraps/common/build/templates/build.tmpl.gradle"
+  local wrapper_props="$P4A_DIR/pythonforandroid/bootstraps/common/build/gradle/wrapper/gradle-wrapper.properties"
+
+  sed -i \
+    -e 's/com.android.tools.build:gradle:8.1.1/com.android.tools.build:gradle:8.11.0/g' \
+    -e 's/jcenter()/mavenCentral()/g' \
+    "$gradle_tmpl"
+  sed -i 's|gradle-8.0.2-all.zip|gradle-8.14.3-all.zip|g' "$wrapper_props"
+}
+
+patch_p4a_android_gradle
 
 echo "$P4A_DIR"
