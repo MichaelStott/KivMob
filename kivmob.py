@@ -10,6 +10,11 @@ try:
 except Exception:
     __version__ = "0.0.0"
 
+
+def _normalize_options(options):
+    return {} if options is None else options
+
+
 if platform == "android":
     try:
         from jnius import autoclass, java_method, PythonJavaClass
@@ -26,10 +31,14 @@ if platform == "android":
         LayoutParams = autoclass("android.view.ViewGroup$LayoutParams")
         LinearLayout = autoclass("android.widget.LinearLayout")
         MobileAds = autoclass("com.google.android.gms.ads.MobileAds")
+        RequestConfigurationBuilder = autoclass(
+            "com.google.android.gms.ads.RequestConfiguration$Builder"
+        )
         View = autoclass("android.view.View")
         AdMobAdapter = autoclass("com.google.ads.mediation.admob.AdMobAdapter")
+        ArrayList = autoclass("java.util.ArrayList")
 
-    except BaseException as exc:
+    except Exception as exc:
         Logger.error(
             "KivMob: Cannot load AdMob classes. Check buildozer.spec. %s" % exc
         )
@@ -67,20 +76,17 @@ if platform == "android":
             @java_method("()V")
             def onInterstitialDismissed(self):
                 Logger.info("KivMob: interstitial dismissed")
-                self._bridge._interstitial_ad = None
                 self._bridge._interstitial_loaded = False
 
             @java_method("(Ljava/lang/String;I)V")
             def onInterstitialFailed(self, message, _code):
                 Logger.warning("KivMob: interstitial failed: %s" % message)
-                self._bridge._interstitial_ad = None
                 self._bridge._interstitial_loaded = False
 
             @java_method("()V")
             def onInterstitialLoaded(self):
                 Logger.info("KivMob: interstitial loaded.")
                 self._bridge._interstitial_loaded = True
-                self._bridge._interstitial_ad = True
 
             @java_method("()V")
             def onInterstitialShown(self):
@@ -94,13 +100,16 @@ if platform == "android":
                 super().__init__()
                 self._bridge = bridge
                 self._user = user_listener
+                self._reward_earned = False
 
             @java_method("()V")
             def onRewardedDismissed(self):
                 Logger.info("KivMob: rewarded ad dismissed")
                 if self._user is not None:
+                    if self._reward_earned:
+                        self._user.on_rewarded_video_ad_completed()
                     self._user.on_rewarded_video_ad_closed()
-                self._bridge._rewarded_ad = None
+                self._reward_earned = False
                 self._bridge._rewarded_loaded = False
 
             @java_method("(Ljava/lang/String;I)V")
@@ -108,7 +117,7 @@ if platform == "android":
                 Logger.info("KivMob: rewarded ad failed: %s" % message)
                 if self._user is not None:
                     self._user.on_rewarded_video_ad_failed_to_load(code)
-                self._bridge._rewarded_ad = None
+                self._reward_earned = False
                 self._bridge._rewarded_loaded = False
 
             @java_method("()V")
@@ -121,13 +130,14 @@ if platform == "android":
             @java_method("()V")
             def onRewardedLoaded(self):
                 Logger.info("KivMob: rewarded ad loaded.")
-                self._bridge._rewarded_ad = True
+                self._reward_earned = False
                 self._bridge._rewarded_loaded = True
                 if self._user is not None:
                     self._user.on_rewarded_video_ad_loaded()
 
             @java_method("(Ljava/lang/String;I)V")
             def onUserEarnedReward(self, reward_type, reward_amount):
+                self._reward_earned = True
                 if self._user is not None:
                     self._user.on_rewarded(str(reward_type), str(reward_amount))
 
@@ -204,12 +214,19 @@ class AdMobBridge:
 
 
 class RewardedListenerInterface:
-    """Interface for objects that handle rewarded video ad callback functions."""
+    """Interface for objects that handle rewarded video ad callback functions.
+
+    On Android, ``on_rewarded_video_ad_left_application`` is not invoked by the
+    current Mobile Ads SDK bridge (no equivalent callback in Play Services Ads
+    25.x). ``on_rewarded_video_ad_completed`` is called on dismiss when the user
+    earned a reward during that ad session.
+    """
 
     def on_rewarded(self, reward_name, reward_amount):
         pass
 
     def on_rewarded_video_ad_left_application(self):
+        """Not called on Android with the current Play Services Ads bridge."""
         pass
 
     def on_rewarded_video_ad_closed(self):
@@ -239,10 +256,8 @@ if platform == "android" and _ANDROID_ADS_OK:
             self._app_id = appID
             self._adview = None
             self._banner_layout = None
-            self._interstitial_ad = None
             self._interstitial_unit = None
             self._interstitial_loaded = False
-            self._rewarded_ad = None
             self._rewarded_unit = None
             self._rewarded_loaded = False
             self._reward_listener = None
@@ -286,6 +301,16 @@ if platform == "android" and _ANDROID_ADS_OK:
         @run_on_ui_thread
         def add_test_device(self, testID):
             self._test_devices.append(testID)
+            self._apply_test_device_config()
+
+        def _apply_test_device_config(self):
+            if not self._test_devices:
+                return
+            ids = ArrayList()
+            for device_id in self._test_devices:
+                ids.add(device_id)
+            config = RequestConfigurationBuilder().setTestDeviceIds(ids).build()
+            MobileAds.setRequestConfiguration(config)
 
         def _banner_ad_size(self):
             dm = activity.mActivity.getResources().getDisplayMetrics()
@@ -325,7 +350,8 @@ if platform == "android" and _ANDROID_ADS_OK:
                 self._adview.loadAd(self._get_builder(options).build())
 
         @run_on_ui_thread
-        def request_banner(self, options={}):
+        def request_banner(self, options=None):
+            options = _normalize_options(options)
             if not self._ads_initialized:
                 self._pending_banner_options = options
                 return
@@ -346,14 +372,12 @@ if platform == "android" and _ANDROID_ADS_OK:
         @run_on_ui_thread
         def new_interstitial(self, unitID):
             self._interstitial_unit = unitID
-            self._interstitial_ad = None
             self._interstitial_loaded = False
 
         def _load_interstitial(self, options):
             if not self._interstitial_unit:
                 Logger.error("KivMob: call new_interstitial(unit_id) first.")
                 return
-            self._interstitial_ad = None
             self._interstitial_loaded = False
             try:
                 KivMobAdsBridge.loadInterstitial(
@@ -364,11 +388,11 @@ if platform == "android" and _ANDROID_ADS_OK:
                 )
             except Exception as exc:
                 Logger.warning("KivMob: interstitial load disabled: %s" % exc)
-                self._interstitial_ad = None
                 self._interstitial_loaded = False
 
         @run_on_ui_thread
-        def request_interstitial(self, options={}):
+        def request_interstitial(self, options=None):
+            options = _normalize_options(options)
             if not self._ads_initialized:
                 self._pending_interstitial_options = options
                 return
@@ -397,7 +421,6 @@ if platform == "android" and _ANDROID_ADS_OK:
 
         def _load_rewarded(self, unitID):
             self._rewarded_unit = unitID
-            self._rewarded_ad = None
             self._rewarded_loaded = False
             if not unitID:
                 return
@@ -410,7 +433,6 @@ if platform == "android" and _ANDROID_ADS_OK:
                 )
             except Exception as exc:
                 Logger.warning("KivMob: rewarded load disabled: %s" % exc)
-                self._rewarded_ad = None
                 self._rewarded_loaded = False
 
         @run_on_ui_thread
@@ -442,12 +464,18 @@ if platform == "android" and _ANDROID_ADS_OK:
 
         @run_on_ui_thread
         def destroy_interstitial(self):
-            self._interstitial_ad = None
+            try:
+                KivMobAdsBridge.destroyInterstitial()
+            except Exception as exc:
+                Logger.warning("KivMob: destroy_interstitial failed: %s" % exc)
             self._interstitial_loaded = False
 
         @run_on_ui_thread
         def destroy_rewarded_video_ad(self):
-            self._rewarded_ad = None
+            try:
+                KivMobAdsBridge.destroyRewarded()
+            except Exception as exc:
+                Logger.warning("KivMob: destroy_rewarded_video_ad failed: %s" % exc)
             self._rewarded_loaded = False
 
         def _get_builder(self, options):
@@ -462,9 +490,6 @@ if platform == "android" and _ANDROID_ADS_OK:
                         builder.addNetworkExtrasBundle(AdMobAdapter, extras)
                     except Exception as e:
                         Logger.warning("KivMob: addNetworkExtrasBundle: %s" % e)
-            for test_device in self._test_devices:
-                if len(self._test_devices) != 0:
-                    builder.addTestDevice(test_device)
             return builder
 
 
@@ -492,62 +517,63 @@ class KivMob:
             self.bridge = AdMobBridge(appID)
 
     def add_test_device(self, device):
-        Logger.info("KivMob: add_test_device() called.")
+        Logger.debug("KivMob: add_test_device() called.")
         self.bridge.add_test_device(device)
 
     def new_banner(self, unitID, top_pos=True):
-        Logger.info("KivMob: new_banner() called.")
+        Logger.debug("KivMob: new_banner() called.")
         self.bridge.new_banner(unitID, top_pos)
 
     def new_interstitial(self, unitID):
-        Logger.info("KivMob: new_interstitial() called.")
+        Logger.debug("KivMob: new_interstitial() called.")
         self.bridge.new_interstitial(unitID)
 
     def is_interstitial_loaded(self):
-        Logger.info("KivMob: is_interstitial_loaded() called.")
+        Logger.debug("KivMob: is_interstitial_loaded() called.")
         return self.bridge.is_interstitial_loaded()
 
     def is_rewarded_loaded(self):
+        Logger.debug("KivMob: is_rewarded_loaded() called.")
         return self.bridge.is_rewarded_loaded()
 
-    def request_banner(self, options={}):
-        Logger.info("KivMob: request_banner() called.")
+    def request_banner(self, options=None):
+        Logger.debug("KivMob: request_banner() called.")
         self.bridge.request_banner(options)
 
-    def request_interstitial(self, options={}):
-        Logger.info("KivMob: request_interstitial() called.")
+    def request_interstitial(self, options=None):
+        Logger.debug("KivMob: request_interstitial() called.")
         self.bridge.request_interstitial(options)
 
     def show_banner(self):
-        Logger.info("KivMob: show_banner() called.")
+        Logger.debug("KivMob: show_banner() called.")
         self.bridge.show_banner()
 
     def show_interstitial(self):
-        Logger.info("KivMob: show_interstitial() called.")
+        Logger.debug("KivMob: show_interstitial() called.")
         self.bridge.show_interstitial()
 
     def destroy_banner(self):
-        Logger.info("KivMob: destroy_banner() called.")
+        Logger.debug("KivMob: destroy_banner() called.")
         self.bridge.destroy_banner()
 
     def destroy_interstitial(self):
-        Logger.info("KivMob: destroy_interstitial() called.")
+        Logger.debug("KivMob: destroy_interstitial() called.")
         self.bridge.destroy_interstitial()
 
     def hide_banner(self):
-        Logger.info("KivMob: hide_banner() called.")
+        Logger.debug("KivMob: hide_banner() called.")
         self.bridge.hide_banner()
 
     def set_rewarded_ad_listener(self, listener):
-        Logger.info("KivMob: set_rewarded_ad_listener() called.")
+        Logger.debug("KivMob: set_rewarded_ad_listener() called.")
         self.bridge.set_rewarded_ad_listener(listener)
 
     def load_rewarded_ad(self, unitID):
-        Logger.info("KivMob: load_rewarded_ad() called.")
+        Logger.debug("KivMob: load_rewarded_ad() called.")
         self.bridge.load_rewarded_ad(unitID)
 
     def show_rewarded_ad(self):
-        Logger.info("KivMob: show_rewarded_ad() called.")
+        Logger.debug("KivMob: show_rewarded_ad() called.")
         self.bridge.show_rewarded_ad()
 
     def determine_banner_height(self):

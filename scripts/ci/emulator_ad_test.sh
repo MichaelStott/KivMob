@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Install APK on a running emulator/device and validate AdMob smoke via logcat.
+# STRICT_DISMISS=1 — fail interstitial smoke if dismiss log is not seen (default: warn only).
 set -euo pipefail
 
 AD_TYPE="${1:?Usage: $0 <banner|interstitial|rewarded> <apk-path>}"
@@ -24,6 +25,7 @@ ACTIVITY="${ACTIVITY_PKG}/org.kivy.android.PythonActivity"
 LOG_TIMEOUT="${LOG_TIMEOUT:-180}"
 ADB_DEVICE_TIMEOUT="${ADB_DEVICE_TIMEOUT:-120}"
 BOOT_TIMEOUT="${BOOT_TIMEOUT:-300}"
+STRICT_DISMISS="${STRICT_DISMISS:-0}"
 
 ADB_BIN="${ADB:-adb}"
 if [ -n "${ANDROID_SERIAL:-}" ]; then
@@ -179,6 +181,10 @@ case "$AD_TYPE" in
     wait_for_log 'interstitial shown' 60
     _dismiss_interstitial_ad || true
     if ! wait_for_log_with_dismiss 'interstitial dismissed' 90; then
+      if [ "$STRICT_DISMISS" = "1" ]; then
+        echo "FAIL: interstitial dismiss not confirmed (STRICT_DISMISS=1)" >&2
+        exit 1
+      fi
       echo "WARNING: dismiss not confirmed on emulator (load+show OK; test ads often ignore BACK/tap)" >&2
     fi
     ;;

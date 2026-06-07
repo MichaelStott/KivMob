@@ -7,6 +7,17 @@ Python AdMob bindings for Kivy.
 ### Added
 
 - Per-package changelog and versioning under `changelog/`.
+- `destroy_interstitial()` / `destroy_rewarded_video_ad()` clear loaded ads in the Java bridge.
+
+### Changed
+
+- Test devices use `RequestConfiguration.setTestDeviceIds()` instead of deprecated `AdRequest.Builder.addTestDevice()`.
+- Rewarded dismiss invokes `on_rewarded_video_ad_completed()` when the user earned a reward in that session.
+- Routine `KivMob` API calls log at debug level instead of info.
+
+### Removed
+
+- `on_rewarded_video_ad_left_application` is not invoked on Android (no equivalent in Play Services Ads 25.x).
 
 ## [2.1.0] - 2026-05-17
 

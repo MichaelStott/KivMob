@@ -88,6 +88,10 @@ public final class KivMobAdsBridge {
         }
     }
 
+    public static void destroyInterstitial() {
+        interstitialAd = null;
+    }
+
     public static void loadRewarded(
             Activity activity,
             String unitId,
@@ -161,5 +165,9 @@ public final class KivMobAdsBridge {
                                 rewardItem.getAmount());
                     }
                 });
+    }
+
+    public static void destroyRewarded() {
+        rewardedAd = null;
     }
 }

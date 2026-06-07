@@ -4,6 +4,10 @@ Android Java library (`org.kivmob:kivmob-android-bridge`) used by KivMob on Andr
 
 ## [Unreleased]
 
+### Added
+
+- `destroyInterstitial()` and `destroyRewarded()` to drop loaded ad references.
+
 ### Changed
 
 - Renamed from `kivmob-bridge` (`org.kivmob:kivmob-bridge`) to clarify this is the Android Java bridge; iOS will use a separate bridge artifact.

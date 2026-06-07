@@ -16,6 +16,7 @@
 #   ANDROID_EMU_SHM       /dev/shm size (default 2gb; auto 1gb when Docker RAM < 6 GiB)
 #   ANDROID_EMU_CORES     vCPU count (default 2)
 #   LOG_TIMEOUT             Logcat wait seconds (default 180)
+#   STRICT_DISMISS          Set to 1 to require interstitial dismiss log (default 0)
 #   ANDROID_GRADLE_IMAGE    Gradle/SDK image for bridge (default cimg/android:2025.12.1)
 
 name: kivmob-android
