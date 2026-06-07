@@ -1,0 +1,5 @@
+# Runtime deps for unit tests (library + demo).
+pytest>=7.0
+coverage>=7.0
+kivy>=2.0
+kivymd>=1.0

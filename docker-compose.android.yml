@@ -1,0 +1,95 @@
+# Android ad emulator + smoke tests (scripts/ci/docker_android_test.sh).
+# APKs are built first; the emulator starts only for smoke tests (saves RAM during long builds).
+#
+# Prerequisites: Docker with /dev/kvm passthrough (native docker.io / docker-ce on Linux), ~8GB+ RAM.
+# GitHub Actions and local tests use the same stack (.github/workflows/android-ad-test-reusable.yml).
+#
+# Prefer Make targets:
+#   make android-test-banner
+#   make android-test-interstitial
+#   make android-test-rewarded
+#   make android-test
+#
+# Environment:
+#   SKIP_AUTH=true        Emulator-side auth bypass (Play Store still needs shared adb keys; see .docker-android/keys)
+#   ANDROID_EMU_MEMORY    Emulator RAM MiB (default 4096; auto-capped when Docker RAM is low)
+#   ANDROID_EMU_SHM       /dev/shm size (default 2gb; auto 1gb when Docker RAM < 6 GiB)
+#   ANDROID_EMU_CORES     vCPU count (default 2)
+#   LOG_TIMEOUT             Logcat wait seconds (default 180)
+#   STRICT_DISMISS          Set to 1 to require interstitial dismiss log (default 0)
+#   ANDROID_GRADLE_IMAGE    Gradle/SDK image for bridge (default cimg/android:2025.12.1)
+
+name: kivmob-android
+
+services:
+  emulator:
+    image: halimqarroum/docker-android:api-33-playstore
+    container_name: kivmob-android-emulator
+    # Emulator needs a large /dev/shm; Docker default 64MB causes stalls/OOM.
+    shm_size: ${ANDROID_EMU_SHM:-2gb}
+    devices:
+      - /dev/kvm:/dev/kvm
+    # Bind on all interfaces so smoke (via host.docker.internal) can reach adb from another container.
+    ports:
+      - "5555:5555"
+    environment:
+      SKIP_AUTH: ${SKIP_AUTH:-true}
+      DISABLE_ANIMATION: "true"
+      DISABLE_HIDDEN_POLICY: "true"
+      GPU_ACCELERATED: "false"
+      MEMORY: ${ANDROID_EMU_MEMORY:-4096}
+      CORES: ${ANDROID_EMU_CORES:-2}
+      # Default API 33 userdata is ~7.3GB; lower partition-size when host/docker disk is tight.
+      EXTRA_FLAGS: "-no-metrics -no-audio -partition-size ${ANDROID_EMU_PARTITION_MB:-4096}"
+    volumes:
+      - android-emulator-data:/data
+      # Play Store images require the same adbkey on emulator and remote clients (HQarroum/docker-android).
+      - ./.docker-android/keys/adbkey:/root/.android/adbkey:ro
+      - ./.docker-android/keys/adbkey.pub:/root/.android/adbkey.pub:ro
+    # Do not use "adb wait-for-device" here — it blocks and exceeds Docker's probe timeout.
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'boot=$$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d "\r"); test "$$boot" = "1"',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 90
+      start_period: 120s
+
+  bridge:
+    # cimg tags are dated (e.g. 2025.12.1), not API levels — see hub.docker.com/r/cimg/android/tags
+    image: ${ANDROID_GRADLE_IMAGE:-cimg/android:2025.12.1}
+    user: "0:0"
+    volumes:
+      - .:/workspace
+      - ${HOME}/.m2:/root/.m2
+    working_dir: /workspace
+    command:
+      - bash
+      - -ec
+      - |
+        chmod +x scripts/ci/*.sh bridges/android/gradlew
+        cd bridges/android
+        ./gradlew :kivmob-android-bridge:publishToMavenLocal --no-daemon
+
+  smoke:
+    build:
+      context: ./scripts/ci
+      dockerfile: Dockerfile.android-smoke
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - .:/workspace:ro
+      - ./.docker-android/keys/adbkey:/root/.android/adbkey:ro
+      - ./.docker-android/keys/adbkey.pub:/root/.android/adbkey.pub:ro
+    working_dir: /workspace
+    environment:
+      # Reach emulator on the compose network (avoids host adb + host.docker.internal auth issues).
+      ANDROID_SERIAL: "${ADB_CONNECT:-kivmob-android-emulator:5555}"
+      ADB_CONNECT: "${ADB_CONNECT:-kivmob-android-emulator:5555}"
+      LOG_TIMEOUT: ${LOG_TIMEOUT:-180}
+
+volumes:
+  android-emulator-data:

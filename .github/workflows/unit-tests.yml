@@ -1,0 +1,59 @@
+name: Unit tests
+
+on:
+  push:
+    branches: [master, main]
+    paths:
+      - "changelog/**"
+      - "CHANGELOG.md"
+      - "kivmob.py"
+      - "setup.py"
+      - "scripts/version.py"
+      - "demo/**"
+      - "tests/test_*.py"
+      - "tests/conftest.py"
+      - "requirements-test.txt"
+      - "pytest.ini"
+      - "Makefile"
+      - ".github/workflows/unit-tests.yml"
+  pull_request:
+    paths:
+      - "changelog/**"
+      - "CHANGELOG.md"
+      - "kivmob.py"
+      - "setup.py"
+      - "scripts/version.py"
+      - "demo/**"
+      - "tests/test_*.py"
+      - "tests/conftest.py"
+      - "requirements-test.txt"
+      - "pytest.ini"
+      - "Makefile"
+      - ".github/workflows/unit-tests.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: unit-tests-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Kivy system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            xvfb libgl1 libglib2.0-0 libmtdev1 libsm6 libxrender1 libxext6
+
+      - name: Install test dependencies
+        run: pip install -r requirements-test.txt
+
+      - name: Run unit tests
+        run: xvfb-run -a make test

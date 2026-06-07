@@ -1,0 +1,42 @@
+# Build and smoke-test rewarded video ads — same as: make android-test-rewarded
+name: Android — Rewarded Tests
+
+on:
+  push:
+    branches: [master, main]
+    paths:
+      - "tests/android_ci/rewarded/**"
+      - "changelog/**"
+      - "CHANGELOG.md"
+      - "scripts/version.py"
+      - "tests/android_ci/buildozer.spec.in"
+      - "kivmob.py"
+      - "bridges/android/**"
+      - "scripts/ci/**"
+      - "docker-compose.android.yml"
+      - ".github/workflows/android-ad-rewarded.yml"
+      - ".github/workflows/android-ad-test-reusable.yml"
+  pull_request:
+    paths:
+      - "tests/android_ci/rewarded/**"
+      - "changelog/**"
+      - "CHANGELOG.md"
+      - "scripts/version.py"
+      - "tests/android_ci/buildozer.spec.in"
+      - "kivmob.py"
+      - "bridges/android/**"
+      - "scripts/ci/**"
+      - "docker-compose.android.yml"
+      - ".github/workflows/android-ad-rewarded.yml"
+      - ".github/workflows/android-ad-test-reusable.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: android-ad-rewarded-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android-test:
+    uses: ./.github/workflows/android-ad-test-reusable.yml
+    with:
+      app: rewarded

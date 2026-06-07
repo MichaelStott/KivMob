@@ -10,11 +10,18 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import ScreenManager
 from kivy.uix.image import Image
 from kivy.properties import NumericProperty
+from kivy.logger import Logger
 
-if platform not in ("android", "ios"):
-    # Approximate dimensions of mobile phone.
-    Config.set("graphics", "resizable", "0")
-    Window.size = (400, 600)
+
+def _configure_window_for_desktop_preview(platform_name):
+    """Resize window on desktop only (unit-test both branches without faking imports)."""
+    if platform_name not in ("android", "ios"):
+        # Approximate dimensions of mobile phone.
+        Config.set("graphics", "resizable", "0")
+        Window.size = (400, 600)
+
+
+_configure_window_for_desktop_preview(platform)
 
 __version__ = "1.0"
 
@@ -23,10 +30,8 @@ from kivymd.uix.list import ILeftBody
 from kivymd.uix.list import OneLineListItem
 from kivymd.uix.list import TwoLineListItem
 from kivymd.uix.list import ThreeLineListItem
-from kivymd.uix.snackbar import Snackbar
 
-Builder.load_string(
-"""
+Builder.load_string("""
 #:import kivy kivy
 #.import Snackbar kivymd.uix.snackbar.Snackbar
 #:import MDList kivymd.uix.list.MDList
@@ -39,10 +44,32 @@ Builder.load_string(
 <KivMobDemoUI>:
     BoxLayout:
         orientation: 'vertical'
-        MDToolbar:
-            id: toolbar
-            title: 'KivMob 2.0'
-            md_bg_color: app.theme_cls.primary_color
+        BoxLayout:
+            size_hint_y: None
+            height: "56dp"
+            padding: "8dp", 0
+            spacing: "8dp"
+            canvas.before:
+                Color:
+                    rgba: app.theme_cls.primary_color
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            Button:
+                id: back_btn
+                text: "<"
+                size_hint_x: None
+                width: "48dp"
+                opacity: 0
+                disabled: True
+                on_release: root.back_to_menu()
+            Label:
+                id: title_lbl
+                text: "KivMob 2.0"
+                color: 1, 1, 1, 1
+                halign: "left"
+                valign: "middle"
+                text_size: self.size
         ScreenManager:
             id: scr_mngr
             Screen:
@@ -125,44 +152,43 @@ Builder.load_string(
                     elevation_normal: 2
                     pos_hint: {'center_x': 0.5, 'center_y': 0.25}
                     on_press: app.ads.show_rewarded_ad()
-"""
-)
+""")
+
 
 class AvatarIconWidget(ILeftBody, Image):
     pass
 
+
 class KivMobDemoUI(FloatLayout):
     def switch_to_screen(self, name, title):
-        self.ids.toolbar.title = title
-        self.ids.toolbar.left_action_items = [
-            ["chevron-left", lambda x: self.back_to_menu()]
-        ]
+        self.ids.title_lbl.text = title
+        self.ids.back_btn.opacity = 1
+        self.ids.back_btn.disabled = False
         self.ids.scr_mngr.transition.direction = "left"
         self.ids.scr_mngr.current = name
-        self.interstitial_snack = Snackbar(
-            text="Interstitial has not yet loaded."
-        )
 
     def back_to_menu(self):
         self.ids.scr_mngr.transition.direction = "right"
         self.ids.scr_mngr.current = "menu"
-        self.ids.toolbar.title = "KivMob 2.0"
-        self.ids.toolbar.left_action_items = []
+        self.ids.title_lbl.text = "KivMob 2.0"
+        self.ids.back_btn.opacity = 0
+        self.ids.back_btn.disabled = True
 
     def show_interstitial_msg(self):
-        self.interstitial_snack.show()
+        Logger.info("KivMobDemo: Interstitial has not yet loaded.")
 
     def hide_interstitial_msg(self):
-        self.interstitial_snack.hide()
+        pass
 
     def open_dialog(self):
         pass
 
+
 class KivMobDemo(MDApp):
 
-    def __init__(self,**kwargs):
-        self.theme_cls.theme_style = "Dark"
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.theme_cls.theme_style = "Dark"
         self.rewards = Rewards_Handler(self)
 
     Points = NumericProperty(0)
@@ -186,12 +212,24 @@ class KivMobDemo(MDApp):
         else:
             self.ads.hide_banner()
 
+    def on_pause(self):
+        if platform == "android":
+            self.ads.hide_banner()
+
+    def on_resume(self):
+        if platform == "android":
+            self.ads.request_interstitial()
+            self.ads.load_rewarded_ad(TestIds.REWARDED_VIDEO)
+            if self.show_banner:
+                self.ads.request_banner()
+
     def load_video(self):
         self.ads.load_rewarded_ad(TestIds.REWARDED_VIDEO)
 
+
 class Rewards_Handler(RewardedListenerInterface):
 
-    def __init__(self,other):
+    def __init__(self, other):
         self.AppObj = other
 
     Reward = "None"
@@ -203,7 +241,7 @@ class Rewards_Handler(RewardedListenerInterface):
         self.AppObj.Points += int(reward_amount)
 
     def on_rewarded_video_ad_completed(self):
-        self.on_rewarded(self.Reward,self.Reward_Amount)
+        self.on_rewarded(self.Reward, self.Reward_Amount)
 
     def on_rewarded_video_ad_started(self):
         self.AppObj.load_video()
@@ -211,5 +249,6 @@ class Rewards_Handler(RewardedListenerInterface):
     def on_rewarded_video_ad_left_application(self):
         self.AppObj.Points += 0
 
-if __name__ == "__main__":
+
+if __name__ == "__main__":  # pragma: no cover
     KivMobDemo().run()

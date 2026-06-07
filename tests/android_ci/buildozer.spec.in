@@ -1,0 +1,41 @@
+[app]
+
+title = @APP_TITLE@
+package.name = @PACKAGE_NAME@
+package.domain = org.kivmob.ci
+
+source.dir = .
+source.include_exts = py
+
+version = 0.0.1
+
+# kivmob.py is copied into source.dir before build; do not use requirements.source.kivmob = repo root.
+requirements = python3, kivy, jnius, android
+
+orientation = portrait
+fullscreen = 0
+
+android.permissions = INTERNET, ACCESS_NETWORK_STATE
+android.api = 35
+android.minapi = 23
+android.ndk = 25b
+android.accept_sdk_license = True
+
+android.gradle_dependencies = com.google.android.gms:play-services-ads:25.2.0, org.kivmob:kivmob-android-bridge:@BRIDGE_VERSION@
+android.enable_androidx = True
+android.add_gradle_repositories = mavenLocal()
+android.meta_data = com.google.android.gms.ads.APPLICATION_ID=ca-app-pub-3940256099942544~3347511713
+android.logcat_filters = *:S python:D KivMobAdsBridge:D
+android.archs = arm64-v8a, armeabi-v7a, x86_64
+
+# Pinned checkout mounted at /home/user/p4a (see scripts/ci/ensure_p4a_checkout.sh).
+# p4a 957a3e5f + AGP 8.11 patch; avoids p4a HEAD (Python 3.14 / PyProjectRecipe).
+p4a.source_dir = /home/user/p4a
+
+[app@emulator]
+android.archs = x86_64
+
+[buildozer]
+log_level = 2
+# Required for non-interactive Docker builds (container runs as root).
+warn_on_root = 0
