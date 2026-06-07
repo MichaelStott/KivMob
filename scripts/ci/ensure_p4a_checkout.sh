@@ -27,9 +27,9 @@ patch_p4a_android_gradle() {
     -e 's/packagingOptions {/packaging {/g' \
     "$gradle_tmpl"
   sed -i 's|gradle-8.0.2-all.zip|gradle-8.14.3-all.zip|g' "$wrapper_props"
-  # AGP 8.11 rejects extractNativeLibs in the manifest when jniLibs.useLegacyPackaging is set in Gradle;
-  # leaving both caused intermittent :packageDebug / IncrementalSplitterRunnable failures in CI.
-  sed -i '/android:extractNativeLibs/d' "$manifest_tmpl"
+  # Remove extractNativeLibs (conflicts with jniLibs.useLegacyPackaging in Gradle on AGP 8.11).
+  # Replace the attribute line with ">" — do not delete the line; it holds the <application> close.
+  sed -i 's/[[:space:]]*android:extractNativeLibs="true"[[:space:]]*>/ >/' "$manifest_tmpl"
 }
 
 patch_p4a_android_gradle
