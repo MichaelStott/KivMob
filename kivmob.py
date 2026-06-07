@@ -15,6 +15,11 @@ def _normalize_options(options):
     return {} if options is None else options
 
 
+def _ad_load_callback_current(active_generation, load_generation):
+    """True when an ad callback belongs to the current load (not destroyed/superseded)."""
+    return active_generation == load_generation
+
+
 if platform == "android":
     try:
         from jnius import autoclass, java_method, PythonJavaClass
@@ -73,23 +78,37 @@ if platform == "android":
                 super().__init__()
                 self._bridge = bridge
 
+            def _is_current(self):
+                bridge = self._bridge
+                return _ad_load_callback_current(
+                    bridge._interstitial_active_gen, bridge._interstitial_load_gen
+                )
+
             @java_method("()V")
             def onInterstitialDismissed(self):
+                if not self._is_current():
+                    return
                 Logger.info("KivMob: interstitial dismissed")
                 self._bridge._interstitial_loaded = False
 
             @java_method("(Ljava/lang/String;I)V")
             def onInterstitialFailed(self, message, _code):
+                if not self._is_current():
+                    return
                 Logger.warning("KivMob: interstitial failed: %s" % message)
                 self._bridge._interstitial_loaded = False
 
             @java_method("()V")
             def onInterstitialLoaded(self):
+                if not self._is_current():
+                    return
                 Logger.info("KivMob: interstitial loaded.")
                 self._bridge._interstitial_loaded = True
 
             @java_method("()V")
             def onInterstitialShown(self):
+                if not self._is_current():
+                    return
                 Logger.info("KivMob: interstitial shown")
 
         class KivRewardedBridgeListener(PythonJavaClass):
@@ -102,8 +121,16 @@ if platform == "android":
                 self._user = user_listener
                 self._reward_earned = False
 
+            def _is_current(self):
+                bridge = self._bridge
+                return _ad_load_callback_current(
+                    bridge._rewarded_active_gen, bridge._rewarded_load_gen
+                )
+
             @java_method("()V")
             def onRewardedDismissed(self):
+                if not self._is_current():
+                    return
                 Logger.info("KivMob: rewarded ad dismissed")
                 if self._user is not None:
                     if self._reward_earned:
@@ -114,6 +141,8 @@ if platform == "android":
 
             @java_method("(Ljava/lang/String;I)V")
             def onRewardedFailed(self, message, code):
+                if not self._is_current():
+                    return
                 Logger.info("KivMob: rewarded ad failed: %s" % message)
                 if self._user is not None:
                     self._user.on_rewarded_video_ad_failed_to_load(code)
@@ -122,6 +151,8 @@ if platform == "android":
 
             @java_method("()V")
             def onRewardedShown(self):
+                if not self._is_current():
+                    return
                 Logger.info("KivMob: rewarded ad shown")
                 if self._user is not None:
                     self._user.on_rewarded_video_ad_opened()
@@ -129,6 +160,8 @@ if platform == "android":
 
             @java_method("()V")
             def onRewardedLoaded(self):
+                if not self._is_current():
+                    return
                 Logger.info("KivMob: rewarded ad loaded.")
                 self._reward_earned = False
                 self._bridge._rewarded_loaded = True
@@ -137,6 +170,8 @@ if platform == "android":
 
             @java_method("(Ljava/lang/String;I)V")
             def onUserEarnedReward(self, reward_type, reward_amount):
+                if not self._is_current():
+                    return
                 self._reward_earned = True
                 if self._user is not None:
                     self._user.on_rewarded(str(reward_type), str(reward_amount))
@@ -220,6 +255,9 @@ class RewardedListenerInterface:
     current Mobile Ads SDK bridge (no equivalent callback in Play Services Ads
     25.x). ``on_rewarded_video_ad_completed`` is called on dismiss when the user
     earned a reward during that ad session.
+
+    ``set_rewarded_ad_listener()`` may be called before load or while an ad is
+    showing; the active listener is updated and in-flight reward state is kept.
     """
 
     def on_rewarded(self, reward_name, reward_amount):
@@ -258,8 +296,12 @@ if platform == "android" and _ANDROID_ADS_OK:
             self._banner_layout = None
             self._interstitial_unit = None
             self._interstitial_loaded = False
+            self._interstitial_load_gen = 0
+            self._interstitial_active_gen = 0
             self._rewarded_unit = None
             self._rewarded_loaded = False
+            self._rewarded_load_gen = 0
+            self._rewarded_active_gen = 0
             self._reward_listener = None
             self._interstitial_bridge_listener = KivInterstitialBridgeListener(self)
             self._rewarded_bridge_listener = KivRewardedBridgeListener(
@@ -369,16 +411,32 @@ if platform == "android" and _ANDROID_ADS_OK:
             if self._adview is not None:
                 self._adview.setVisibility(View.GONE)
 
+        def _begin_interstitial_load(self):
+            self._interstitial_load_gen += 1
+            self._interstitial_active_gen = self._interstitial_load_gen
+
+        def _invalidate_interstitial_load(self):
+            self._interstitial_load_gen += 1
+            self._interstitial_loaded = False
+
+        def _begin_rewarded_load(self):
+            self._rewarded_load_gen += 1
+            self._rewarded_active_gen = self._rewarded_load_gen
+
+        def _invalidate_rewarded_load(self):
+            self._rewarded_load_gen += 1
+            self._rewarded_loaded = False
+
         @run_on_ui_thread
         def new_interstitial(self, unitID):
+            self._invalidate_interstitial_load()
             self._interstitial_unit = unitID
-            self._interstitial_loaded = False
 
         def _load_interstitial(self, options):
             if not self._interstitial_unit:
                 Logger.error("KivMob: call new_interstitial(unit_id) first.")
                 return
-            self._interstitial_loaded = False
+            self._begin_interstitial_load()
             try:
                 KivMobAdsBridge.loadInterstitial(
                     activity.mActivity,
@@ -388,7 +446,7 @@ if platform == "android" and _ANDROID_ADS_OK:
                 )
             except Exception as exc:
                 Logger.warning("KivMob: interstitial load disabled: %s" % exc)
-                self._interstitial_loaded = False
+                self._invalidate_interstitial_load()
 
         @run_on_ui_thread
         def request_interstitial(self, options=None):
@@ -414,16 +472,27 @@ if platform == "android" and _ANDROID_ADS_OK:
 
         @run_on_ui_thread
         def set_rewarded_ad_listener(self, listener):
+            reward_earned = False
+            prev = self._rewarded_bridge_listener
+            if prev is not None:
+                reward_earned = prev._reward_earned
             self._reward_listener = listener
             self._rewarded_bridge_listener = KivRewardedBridgeListener(
                 self, self._reward_listener
             )
+            if reward_earned:
+                self._rewarded_bridge_listener._reward_earned = True
+            try:
+                KivMobAdsBridge.setRewardedListener(self._rewarded_bridge_listener)
+            except Exception as exc:
+                Logger.warning("KivMob: setRewardedListener failed: %s" % exc)
 
         def _load_rewarded(self, unitID):
             self._rewarded_unit = unitID
-            self._rewarded_loaded = False
             if not unitID:
+                self._invalidate_rewarded_load()
                 return
+            self._begin_rewarded_load()
             try:
                 KivMobAdsBridge.loadRewarded(
                     activity.mActivity,
@@ -433,7 +502,7 @@ if platform == "android" and _ANDROID_ADS_OK:
                 )
             except Exception as exc:
                 Logger.warning("KivMob: rewarded load disabled: %s" % exc)
-                self._rewarded_loaded = False
+                self._invalidate_rewarded_load()
 
         @run_on_ui_thread
         def load_rewarded_ad(self, unitID):
@@ -468,7 +537,7 @@ if platform == "android" and _ANDROID_ADS_OK:
                 KivMobAdsBridge.destroyInterstitial()
             except Exception as exc:
                 Logger.warning("KivMob: destroy_interstitial failed: %s" % exc)
-            self._interstitial_loaded = False
+            self._invalidate_interstitial_load()
 
         @run_on_ui_thread
         def destroy_rewarded_video_ad(self):
@@ -476,7 +545,7 @@ if platform == "android" and _ANDROID_ADS_OK:
                 KivMobAdsBridge.destroyRewarded()
             except Exception as exc:
                 Logger.warning("KivMob: destroy_rewarded_video_ad failed: %s" % exc)
-            self._rewarded_loaded = False
+            self._invalidate_rewarded_load()
 
         def _get_builder(self, options):
             builder = AdRequestBuilder()

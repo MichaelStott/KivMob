@@ -11,6 +11,8 @@ Python AdMob bindings for Kivy.
 
 ### Changed
 
+- Interstitial/rewarded callbacks ignore stale in-flight loads after `destroy_*` or a superseding load.
+- `set_rewarded_ad_listener()` updates the Java bridge listener and preserves earned-reward state mid-session.
 - Test devices use `RequestConfiguration.setTestDeviceIds()` instead of deprecated `AdRequest.Builder.addTestDevice()`.
 - Rewarded dismiss invokes `on_rewarded_video_ad_completed()` when the user earned a reward in that session.
 - Routine `KivMob` API calls log at debug level instead of info.

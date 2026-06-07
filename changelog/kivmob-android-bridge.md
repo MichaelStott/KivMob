@@ -7,6 +7,7 @@ Android Java library (`org.kivmob:kivmob-android-bridge`) used by KivMob on Andr
 ### Added
 
 - `destroyInterstitial()` and `destroyRewarded()` to drop loaded ad references.
+- `setRewardedListener()` to update the active rewarded callback handler mid-session.
 
 ### Changed
 

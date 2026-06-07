@@ -170,4 +170,8 @@ public final class KivMobAdsBridge {
     public static void destroyRewarded() {
         rewardedAd = null;
     }
+
+    public static void setRewardedListener(KivMobRewardedListener listener) {
+        rewardedListener = listener;
+    }
 }

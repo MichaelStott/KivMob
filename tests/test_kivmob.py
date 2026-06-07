@@ -11,6 +11,7 @@ from kivmob import (
     KivMob,
     RewardedListenerInterface,
     TestIds,
+    _ad_load_callback_current,
 )
 
 
@@ -92,6 +93,11 @@ def test_kivmob_forwards_calls_to_bridge():
     km.bridge.set_rewarded_ad_listener.assert_called_once_with(None)
     km.bridge.load_rewarded_ad.assert_called_once_with("rw-unit")
     km.bridge.show_rewarded_ad.assert_called_once()
+
+
+def test_ad_load_callback_current_detects_stale_generations():
+    assert _ad_load_callback_current(3, 3) is True
+    assert _ad_load_callback_current(3, 4) is False
 
 
 def test_rewarded_listener_interface_defaults_are_callable():
