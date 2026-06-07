@@ -16,9 +16,8 @@ orientation = portrait
 fullscreen = 0
 
 android.permissions = INTERNET, ACCESS_NETWORK_STATE
-android.api = 34
+android.api = 35
 android.minapi = 23
-android.sdk = 34
 android.ndk = 25b
 android.accept_sdk_license = True
 
@@ -30,7 +29,7 @@ android.logcat_filters = *:S python:D KivMobAdsBridge:D
 android.archs = arm64-v8a, armeabi-v7a, x86_64
 
 # Pinned checkout mounted at /home/user/p4a (see scripts/ci/ensure_p4a_checkout.sh).
-# Avoids p4a master (Python 3.14) and git-clone failures inside Docker volumes.
+# AGP 8.11 + Python 3.11.5; avoids p4a HEAD (Python 3.14).
 p4a.source_dir = /home/user/p4a
 
 [app@emulator]
