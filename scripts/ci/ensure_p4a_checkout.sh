@@ -19,12 +19,17 @@ git -C "$P4A_DIR" checkout -f "$P4A_COMMIT"
 patch_p4a_android_gradle() {
   local gradle_tmpl="$P4A_DIR/pythonforandroid/bootstraps/common/build/templates/build.tmpl.gradle"
   local wrapper_props="$P4A_DIR/pythonforandroid/bootstraps/common/build/gradle/wrapper/gradle-wrapper.properties"
+  local manifest_tmpl="$P4A_DIR/pythonforandroid/bootstraps/sdl2/build/templates/AndroidManifest.tmpl.xml"
 
   sed -i \
     -e 's/com.android.tools.build:gradle:8.1.1/com.android.tools.build:gradle:8.11.0/g' \
     -e 's/jcenter()/mavenCentral()/g' \
+    -e 's/packagingOptions {/packaging {/g' \
     "$gradle_tmpl"
   sed -i 's|gradle-8.0.2-all.zip|gradle-8.14.3-all.zip|g' "$wrapper_props"
+  # AGP 8.11 rejects extractNativeLibs in the manifest when jniLibs.useLegacyPackaging is set in Gradle;
+  # leaving both caused intermittent :packageDebug / IncrementalSplitterRunnable failures in CI.
+  sed -i '/android:extractNativeLibs/d' "$manifest_tmpl"
 }
 
 patch_p4a_android_gradle

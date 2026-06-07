@@ -17,7 +17,8 @@ cd "$ROOT"
 
 export COMPOSE_FILE="${COMPOSE_FILE:-$ROOT/docker-compose.android.yml}"
 SKIP_AUTH="${SKIP_AUTH:-true}"
-CLEAN="${CLEAN:-0}"
+# Fresh .buildozer trees on GHA avoid stale dist state after docker volume prune races.
+CLEAN="${CLEAN:-$([ -n "${GITHUB_ACTIONS:-}" ] && echo 1 || echo 0)}"
 
 for app in "$@"; do
   case "$app" in

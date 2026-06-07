@@ -29,6 +29,8 @@ if [ -d "$APP_DIR/.buildozer/android/platform/build-x86_64/build/other_builds/ki
   sudo rm -rf "$APP_DIR/.buildozer" 2>/dev/null || rm -rf "$APP_DIR/.buildozer" 2>/dev/null || true
 fi
 
+# Recreate the volume so stale Gradle/native state cannot break packageDebug on warm runners.
+docker volume rm "$BOZER_VOLUME" 2>/dev/null || true
 docker volume create "$BOZER_VOLUME" >/dev/null
 
 # .buildozer on a named volume avoids parallel-make races on bind mounts (openssl .d.tmp).

@@ -119,27 +119,28 @@ wait_for_log() {
   return 1
 }
 
+# Kivy Logger splits on the first colon (e.g. "CI_TEST:banner_init" -> "[CI_TEST     ]banner_init").
 case "$AD_TYPE" in
   banner)
-    wait_for_log 'CI_TEST:banner_init' "$LOG_TIMEOUT"
-    wait_for_log 'CI_TEST:banner_shown' 60
-    wait_for_log 'KivMob: Mobile Ads initialized' 90 || true
+    wait_for_log 'banner_init' "$LOG_TIMEOUT"
+    wait_for_log 'banner_shown' 60
+    wait_for_log 'Mobile Ads initialized' 90 || true
     ;;
   interstitial)
-    wait_for_log 'CI_TEST:interstitial_init' "$LOG_TIMEOUT"
-    wait_for_log 'KivMob: interstitial loaded\.' 120
-    wait_for_log 'CI_TEST:interstitial_show' 30
-    wait_for_log 'KivMob: interstitial shown' 60
+    wait_for_log 'interstitial_init' "$LOG_TIMEOUT"
+    wait_for_log 'interstitial loaded' 120
+    wait_for_log 'interstitial_show' 30
+    wait_for_log 'interstitial shown' 60
     sleep 2
     $ADB shell input keyevent 4
-    wait_for_log 'KivMob: interstitial dismissed' 45
+    wait_for_log 'interstitial dismissed' 45
     ;;
   rewarded)
-    wait_for_log 'CI_TEST:rewarded_init' "$LOG_TIMEOUT"
-    wait_for_log 'KivMob: rewarded ad loaded\.' 120
-    wait_for_log 'CI_TEST:rewarded_show' 30
-    wait_for_log 'KivMob: rewarded ad shown' 60
-    wait_for_log 'CI_TEST:rewarded_earned' 120
+    wait_for_log 'rewarded_init' "$LOG_TIMEOUT"
+    wait_for_log 'rewarded ad loaded' 120
+    wait_for_log 'rewarded_show' 30
+    wait_for_log 'rewarded ad shown' 60
+    wait_for_log 'rewarded_earned' 120
     ;;
 esac
 
