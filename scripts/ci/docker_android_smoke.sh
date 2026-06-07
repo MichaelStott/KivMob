@@ -9,7 +9,7 @@ fi
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
-chmod +x scripts/ci/emulator_ad_test.sh scripts/ci/wait_for_android_emulator.sh
+# Workspace is :ro in the smoke container; scripts are executable in git and on the host.
 
 ADB_HOST="${ADB_CONNECT:-kivmob-android-emulator:5555}"
 export ANDROID_SERIAL="${ANDROID_SERIAL:-$ADB_HOST}"
