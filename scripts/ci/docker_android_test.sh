@@ -50,6 +50,8 @@ fi
 chmod +x scripts/ci/*.sh
 export SKIP_AUTH
 
+./scripts/ci/free_github_runner_disk.sh
+
 # Compose pulls show plain interleaved "layerid Downloading X MB" lines. Use docker pull
 # first so interactive terminals get the usual per-layer progress bars (DOCKER_PROGRESS=tty).
 _pull_image_if_missing() {
@@ -69,9 +71,8 @@ GRADLE_IMAGE="${ANDROID_GRADLE_IMAGE:-cimg/android:2025.12.1}"
 EMU_IMAGE="${ANDROID_EMU_IMAGE:-halimqarroum/docker-android:api-33-playstore}"
 BOZER_IMAGE="${DOCKER_IMAGE:-kivy/buildozer:latest}"
 
-echo "==> Ensuring Docker images for android CI"
+echo "==> Ensuring Docker images for android CI (build phase)"
 _pull_image_if_missing "$GRADLE_IMAGE"
-_pull_image_if_missing "$EMU_IMAGE"
 _pull_image_if_missing "$BOZER_IMAGE"
 
 echo "==> Publishing kivmob-android-bridge to Maven local"
@@ -81,6 +82,9 @@ for app in "$@"; do
   echo "==> Building APK: $app (emulator not started yet - avoids idle/OOM during build)"
   CI_ANDROID_CLEAN="$CLEAN" ./scripts/ci/build_android_apk.sh "$app"
 done
+
+echo "==> Ensuring emulator image for smoke tests"
+_pull_image_if_missing "$EMU_IMAGE"
 
 _root_free_mb="$(df -BM "$ROOT" 2>/dev/null | awk 'NR==2 {gsub(/M$/,"",$4); print $4}' || echo 0)"
 if [ "${_root_free_mb:-0}" -lt 8000 ] 2>/dev/null; then
