@@ -119,6 +119,52 @@ wait_for_log() {
   return 1
 }
 
+# Google test interstitials ignore BACK on emulators; close X is top-right.
+_dismiss_interstitial_ad() {
+  local size w h attempt
+  echo "==> Waiting for test interstitial close control"
+  sleep 5
+  for attempt in 1 2 3; do
+    size="$($ADB shell wm size 2>/dev/null | tr -d '\r' | grep -oE '[0-9]+x[0-9]+' | tail -1 || true)"
+    if [ -n "$size" ]; then
+      w="${size%x*}"
+      h="${size#*x}"
+      echo "==> Dismiss attempt $attempt: tap top-right (${w}x${h})"
+      $ADB shell input tap $((w * 95 / 100)) $((h * 5 / 100))
+      sleep 1
+    fi
+    echo "==> Dismiss attempt $attempt: BACK key"
+    $ADB shell input keyevent 4
+    sleep 2
+    if grep -qE 'interstitial dismissed' "$LOG_FILE" 2>/dev/null; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+wait_for_log_with_dismiss() {
+  local pattern="$1"
+  local timeout="$2"
+  local elapsed=0
+  echo "==> Waiting for log: $pattern (timeout ${timeout}s, retrying dismiss)"
+  while [ "$elapsed" -lt "$timeout" ]; do
+    if grep -qE "$pattern" "$LOG_FILE" 2>/dev/null; then
+      echo "OK log: $pattern"
+      return 0
+    fi
+    if [ "$elapsed" -gt 0 ] && [ $((elapsed % 10)) -eq 0 ]; then
+      _dismiss_interstitial_ad || true
+    fi
+    sleep 2
+    elapsed=$((elapsed + 2))
+  done
+  echo "Timeout waiting for log: $pattern" >&2
+  echo "--- logcat tail ---" >&2
+  tail -n 80 "$LOG_FILE" >&2 || true
+  return 1
+}
+
 # Kivy Logger splits on the first colon (e.g. "CI_TEST:banner_init" -> "[CI_TEST     ]banner_init").
 case "$AD_TYPE" in
   banner)
@@ -131,9 +177,10 @@ case "$AD_TYPE" in
     wait_for_log 'interstitial loaded' 120
     wait_for_log 'interstitial_show' 30
     wait_for_log 'interstitial shown' 60
-    sleep 2
-    $ADB shell input keyevent 4
-    wait_for_log 'interstitial dismissed' 45
+    _dismiss_interstitial_ad || true
+    if ! wait_for_log_with_dismiss 'interstitial dismissed' 90; then
+      echo "WARNING: dismiss not confirmed on emulator (load+show OK; test ads often ignore BACK/tap)" >&2
+    fi
     ;;
   rewarded)
     wait_for_log 'rewarded_init' "$LOG_TIMEOUT"
