@@ -41,11 +41,11 @@ Install [Docker] and pull the official [Buildozer] image (SDK/NDK are cached in 
 $ docker pull kivy/buildozer:latest
 ```
 
-KivMob on Android needs the `kivmob-android-bridge` Maven artifact. Publish it once to your local Maven cache (`~/.m2`):
+KivMob on Android needs the `kivmob-android-bridge` Maven artifact from [GitHub Packages](https://github.com/MichaelStott/KivMob/packages). Create a [classic personal access token](https://github.com/settings/tokens) with `read:packages`, then export your GitHub username and token before building:
 
 ```sh
-$ git clone https://github.com/MichaelStott/KivMob.git /tmp/kivmob-bridge
-$ /tmp/kivmob-bridge/scripts/ci/docker_gradle_bridge.sh :kivmob-android-bridge:publishToMavenLocal
+$ export MAVEN_REPO_USERNAME=YourGitHubUsername
+$ export GITHUB_TOKEN=ghp_...   # or export MAVEN_REPO_PASSWORD instead
 ```
 
 Create a new folder containing `main.py` and `buildozer.spec`.
@@ -56,8 +56,10 @@ $ cd kivmob-quickstart
 $ touch main.py
 $ docker run --rm -it \
     --volume "$HOME/.buildozer":/home/user/.buildozer \
-    --volume "$HOME/.m2":/root/.m2 \
     --volume "$(pwd)":/home/user/hostcwd \
+    -e GITHUB_TOKEN \
+    -e MAVEN_REPO_USERNAME \
+    -e MAVEN_REPO_PASSWORD \
     kivy/buildozer init
 ```
 
@@ -94,17 +96,19 @@ android.ndk = 25b
 android.accept_sdk_license = True
 android.gradle_dependencies = com.google.android.gms:play-services-ads:25.2.0, org.kivmob:kivmob-android-bridge:1.0.0
 android.enable_androidx = True
-android.add_gradle_repositories = mavenLocal()
+android.add_gradle_repositories = "maven { url 'https://maven.pkg.github.com/michaelstott/kivmob'; credentials { username = System.getenv('MAVEN_REPO_USERNAME') ?: ''; password = System.getenv('MAVEN_REPO_PASSWORD') ?: System.getenv('GITHUB_TOKEN') ?: '' } }"
 android.meta_data = com.google.android.gms.ads.APPLICATION_ID=ca-app-pub-3940256099942544~3347511713
 ```
 
-Finally, build and launch the application.
+Finally, build and launch the application (the same `GITHUB_TOKEN` / `MAVEN_REPO_USERNAME` env vars must be set).
 
 ```sh
 $ docker run --rm -it \
     --volume "$HOME/.buildozer":/home/user/.buildozer \
-    --volume "$HOME/.m2":/root/.m2 \
     --volume "$(pwd)":/home/user/hostcwd \
+    -e GITHUB_TOKEN \
+    -e MAVEN_REPO_USERNAME \
+    -e MAVEN_REPO_PASSWORD \
     kivy/buildozer android debug deploy run
 ```
 
