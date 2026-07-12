@@ -35,13 +35,22 @@ $ pip3 install https://github.com/MichaelStott/KivMob/archive/refs/heads/master.
 
 ### Quickstart
 
-Create a new folder containing main.py and buildozer.spec.
+Install [Docker] and pull the official [Buildozer] image (SDK/NDK are cached in `~/.buildozer` on the host).
+
+```sh
+$ docker pull kivy/buildozer:latest
+```
+
+Create a new folder containing `main.py` and `buildozer.spec`.
 
 ```sh
 $ mkdir kivmob-quickstart
 $ cd kivmob-quickstart
 $ touch main.py
-$ buildozer init
+$ docker run --rm -it \
+    --volume "$HOME/.buildozer":/home/user/.buildozer \
+    --volume "$(pwd)":/home/user/hostcwd \
+    kivy/buildozer init
 ```
 
 Copy the following into main.py.
@@ -65,7 +74,7 @@ class KivMobTest(App):
 KivMobTest().run()
 ```
 
-Make the following modifications to your buildozer.spec file.
+Make the following modifications to your `buildozer.spec` file.
 
 ```
 requirements = python3, kivy, android, jnius, https://github.com/MichaelStott/KivMob/archive/refs/heads/master.zip
@@ -75,6 +84,7 @@ android.api = 33
 android.minapi = 21
 android.sdk = 33
 android.ndk = 25b
+android.accept_sdk_license = True
 android.gradle_dependencies = com.google.firebase:firebase-ads:23.6.0
 android.enable_androidx = True
 p4a.branch = master
@@ -84,7 +94,10 @@ android.meta_data = com.google.android.gms.ads.APPLICATION_ID=ca-app-pub-3940256
 Finally, build and launch the application.
 
 ```sh
-$ buildozer android debug deploy run
+$ docker run --rm -it \
+    --volume "$HOME/.buildozer":/home/user/.buildozer \
+    --volume "$(pwd)":/home/user/hostcwd \
+    kivy/buildozer android debug deploy run
 ```
 
 ### Other 
@@ -95,6 +108,7 @@ KivMob is an open source project not associated with AdMob. Please abide by thei
 [Google AdMob]: <https://www.google.com/admob/>
 [Kivy]: <https://kivy.org/>
 [Buildozer]: <https://github.com/kivy/buildozer>
+[Docker]: <https://docs.docker.com/>
 [documentation]: <http://kivmob.com>
 
 <!-- App showcase author links -->
