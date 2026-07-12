@@ -41,6 +41,13 @@ Install [Docker] and pull the official [Buildozer] image (SDK/NDK are cached in 
 $ docker pull kivy/buildozer:latest
 ```
 
+KivMob on Android needs the `kivmob-android-bridge` Maven artifact. Publish it once to your local Maven cache (`~/.m2`):
+
+```sh
+$ git clone https://github.com/MichaelStott/KivMob.git /tmp/kivmob-bridge
+$ /tmp/kivmob-bridge/scripts/ci/docker_gradle_bridge.sh :kivmob-android-bridge:publishToMavenLocal
+```
+
 Create a new folder containing `main.py` and `buildozer.spec`.
 
 ```sh
@@ -49,6 +56,7 @@ $ cd kivmob-quickstart
 $ touch main.py
 $ docker run --rm -it \
     --volume "$HOME/.buildozer":/home/user/.buildozer \
+    --volume "$HOME/.m2":/root/.m2 \
     --volume "$(pwd)":/home/user/hostcwd \
     kivy/buildozer init
 ```
@@ -80,14 +88,13 @@ Make the following modifications to your `buildozer.spec` file.
 requirements = python3, kivy, android, jnius, https://github.com/MichaelStott/KivMob/archive/refs/heads/master.zip
 ...
 android.permissions = INTERNET, ACCESS_NETWORK_STATE
-android.api = 33
-android.minapi = 21
-android.sdk = 33
+android.api = 35
+android.minapi = 23
 android.ndk = 25b
 android.accept_sdk_license = True
-android.gradle_dependencies = com.google.firebase:firebase-ads:23.6.0
+android.gradle_dependencies = com.google.android.gms:play-services-ads:25.2.0, org.kivmob:kivmob-android-bridge:1.0.0
 android.enable_androidx = True
-p4a.branch = master
+android.add_gradle_repositories = mavenLocal()
 android.meta_data = com.google.android.gms.ads.APPLICATION_ID=ca-app-pub-3940256099942544~3347511713
 ```
 
@@ -96,6 +103,7 @@ Finally, build and launch the application.
 ```sh
 $ docker run --rm -it \
     --volume "$HOME/.buildozer":/home/user/.buildozer \
+    --volume "$HOME/.m2":/root/.m2 \
     --volume "$(pwd)":/home/user/hostcwd \
     kivy/buildozer android debug deploy run
 ```
