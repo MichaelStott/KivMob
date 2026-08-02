@@ -6,7 +6,7 @@ on:
     paths:
       - "changelog/**"
       - "CHANGELOG.md"
-      - "kivmob.py"
+      - "kivmob/**"
       - "setup.py"
       - "scripts/version.py"
       - "demo/**"
@@ -20,7 +20,7 @@ on:
     paths:
       - "changelog/**"
       - "CHANGELOG.md"
-      - "kivmob.py"
+      - "kivmob/**"
       - "setup.py"
       - "scripts/version.py"
       - "demo/**"

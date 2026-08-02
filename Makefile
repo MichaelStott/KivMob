@@ -56,10 +56,10 @@ version:
 test:
 	cd "$(CURDIR)" && $(PYTHON) -m pytest tests/
 
-## test-cov — Unit tests with coverage for kivmob.py and demo/main.py.
+## test-cov — Unit tests with coverage for kivmob/ and demo/main.py.
 test-cov:
 	cd "$(CURDIR)" && $(PYTHON) -m coverage run --branch --source=. --omit='tests/*,setup.py,docs/*' -m pytest tests/ -q
-	cd "$(CURDIR)" && $(PYTHON) -m coverage report -m --include='kivmob.py,demo/main.py'
+	cd "$(CURDIR)" && $(PYTHON) -m coverage report -m --include='kivmob/*,demo/main.py'
 
 ## build — Demo debug APK via Docker (buildozer).
 build: sync-demo-spec maven-publish-bridge-local
@@ -82,7 +82,8 @@ android-test-rewarded:
 	$(ANDROID_TEST) rewarded
 
 sync-demo-module:
-	cp "$(CURDIR)/kivmob.py" "$(CURDIR)/$(DEMO_DIR)/kivmob.py"
+	rm -rf "$(CURDIR)/$(DEMO_DIR)/kivmob" "$(CURDIR)/$(DEMO_DIR)/kivmob.py"
+	cp -a "$(CURDIR)/kivmob" "$(CURDIR)/$(DEMO_DIR)/kivmob"
 
 ## sync-demo-spec — Sync demo/buildozer.spec bridge version from changelog/.
 sync-demo-spec: sync-demo-module

@@ -3,10 +3,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 demo/.buildozer
+demo/kivmob/
 demo/kivmob.py
 demo/bin
 tests/android_ci/*/.buildozer
 tests/android_ci/*/bin
+tests/android_ci/*/kivmob/
 tests/android_ci/*/kivmob.py
 tests/android_ci/*/buildozer.spec
 .ci-cache/

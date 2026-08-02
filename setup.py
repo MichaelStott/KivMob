@@ -1,7 +1,7 @@
 import sys
 from pathlib import Path
 
-from setuptools import setup
+from setuptools import find_packages, setup
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "scripts"))
 from version import get_version
@@ -13,7 +13,7 @@ setup(
     url="http://github.com/MichaelStott/KivMob",
     author="Michael Stott",
     license="MIT",
-    py_modules=["kivmob"],
+    packages=find_packages(include=["kivmob", "kivmob.*"]),
     install_requires=["kivy"],
     zip_safe=False,
 )

@@ -8,6 +8,7 @@ from kivy.metrics import dp
 import kivmob
 from kivmob import (
     AdMobBridge,
+    DesktopBridge,
     KivMob,
     RewardedListenerInterface,
     TestIds,
@@ -59,8 +60,9 @@ def test_determine_banner_height(window_height, expected_dp):
         assert km.determine_banner_height() == dp(expected_dp)
 
 
-def test_kivmob_uses_admob_bridge_on_non_mobile():
+def test_kivmob_uses_desktop_bridge_on_non_mobile():
     km = KivMob(TestIds.APP)
+    assert isinstance(km.bridge, DesktopBridge)
     assert isinstance(km.bridge, AdMobBridge)
 
 
@@ -77,6 +79,7 @@ def test_kivmob_forwards_calls_to_bridge():
     km.request_interstitial({})
     km.show_interstitial()
     km.destroy_interstitial()
+    km.destroy_rewarded_video_ad()
     km.set_rewarded_ad_listener(None)
     km.load_rewarded_ad("rw-unit")
     km.show_rewarded_ad()
@@ -90,6 +93,7 @@ def test_kivmob_forwards_calls_to_bridge():
     km.bridge.request_interstitial.assert_called_once_with({})
     km.bridge.show_interstitial.assert_called_once()
     km.bridge.destroy_interstitial.assert_called_once()
+    km.bridge.destroy_rewarded_video_ad.assert_called_once()
     km.bridge.set_rewarded_ad_listener.assert_called_once_with(None)
     km.bridge.load_rewarded_ad.assert_called_once_with("rw-unit")
     km.bridge.show_rewarded_ad.assert_called_once()
@@ -98,6 +102,26 @@ def test_kivmob_forwards_calls_to_bridge():
 def test_ad_load_callback_current_detects_stale_generations():
     assert _ad_load_callback_current(3, 3) is True
     assert _ad_load_callback_current(3, 4) is False
+
+
+def test_ad_load_state_begin_and_invalidate():
+    from kivmob.android import _AdLoadState
+
+    state = _AdLoadState()
+    assert state.is_current() is True
+    assert state.loaded is False
+
+    state.begin()
+    state.loaded = True
+    assert state.is_current() is True
+    assert state.loaded is True
+
+    state.invalidate()
+    assert state.is_current() is False
+    assert state.loaded is False
+
+    state.begin()
+    assert state.is_current() is True
 
 
 def test_rewarded_listener_interface_defaults_are_callable():

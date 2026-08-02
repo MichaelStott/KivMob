@@ -14,7 +14,8 @@ DOCKER_IMAGE="${DOCKER_IMAGE:-kivy/buildozer:latest}"
 BOZER_VOLUME="kivmob-ci-${APP}-buildozer"
 
 "$ROOT/scripts/ci/generate_buildozer_spec.sh" "$APP"
-cp "$ROOT/kivmob.py" "$APP_DIR/kivmob.py"
+rm -rf "$APP_DIR/kivmob" "$APP_DIR/kivmob.py"
+cp -a "$ROOT/kivmob" "$APP_DIR/kivmob"
 P4A_DIR="$("$ROOT/scripts/ci/ensure_p4a_checkout.sh")"
 
 if [ "$CLEAN" = "1" ]; then
