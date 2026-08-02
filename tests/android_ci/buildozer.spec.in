@@ -9,7 +9,7 @@ source.include_exts = py
 
 version = 0.0.1
 
-# kivmob.py is copied into source.dir before build; do not use requirements.source.kivmob = repo root.
+# kivmob/ package is copied into source.dir before build; do not use requirements.source.kivmob = repo root.
 requirements = python3, kivy, jnius, android
 
 orientation = portrait

@@ -37,7 +37,7 @@ version = 0.1
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-# kivmob.py is copied into source.dir before build (make sync-demo-module); do not list kivmob here.
+# kivmob/ package is copied into source.dir before build (make sync-demo-module); do not list kivmob here.
 requirements = python3, kivy, kivymd, jnius, android
 
 # (str) Custom source folders for requirements

@@ -4,12 +4,12 @@ on:
   push:
     branches: [master, main]
     paths:
-      - "kivmob.py"
+      - "kivmob/**"
       - "tests/**"
       - ".github/workflows/lint-python.yml"
   pull_request:
     paths:
-      - "kivmob.py"
+      - "kivmob/**"
       - "tests/**"
       - ".github/workflows/lint-python.yml"
   workflow_dispatch:
@@ -31,4 +31,4 @@ jobs:
       - name: Check formatting with black
         uses: psf/black@stable
         with:
-          options: "--check --diff kivmob.py tests/"
+          options: "--check --diff kivmob/ tests/"
